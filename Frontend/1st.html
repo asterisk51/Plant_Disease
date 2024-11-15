@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROW IT!!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Garamond, serif;
+            overflow-x: hidden;
+            background-color: #000;
+        }
+
+        .navbar {
+             background: radial-gradient(circle at center,
+	        #27c95c 0%,
+                #57d07f 100%
+            );
+            padding: clamp(1rem, 2vw, 1.5rem);
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            height: clamp(60px, 12vw, 80px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: clamp(5px, 1vw, 10px);
+            position: absolute;
+            left: clamp(5px, 2vw, 5px);
+        }
+
+        .logo img {
+    	   width: clamp(60px, 10vw, 120px); /* Increased size */
+    	   height: clamp(60px, 10vw, 120px); /* Increased size */
+    	   object-fit: contain;
+	}
+
+
+        .logo-text {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: bold;
+            color: #0f2e14;
+            text-align: center;
+        }
+
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: clamp(20px, 4vw, 24px);
+            cursor: pointer;
+            padding: 5px;
+            position: absolute;
+            right: clamp(10px, 2vw, 20px);
+        }
+
+        .menu {
+            display: flex;
+            gap: clamp(10px, 2vw, 20px);
+            position: absolute;
+            right: clamp(10px, 2vw, 20px);
+        }
+
+        .menu a {
+    	    color: #333;
+    	    text-decoration: none;
+    	    padding: 5px 10px;
+    	    font-size: clamp(16px, 3vw, 18px);
+    	    font-weight: bold; /* Bold menu text */
+	}
+
+
+        .section-container {
+            min-height: 100vh;
+            position: relative;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            background-image: url('background.jpeg');
+        }
+
+        .content-wrapper {
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: clamp(2rem, 4vw, 4rem) clamp(1rem, 2vw, 2rem);
+            width: clamp(300px, 50%, 800px);
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            margin-top: clamp(60px, 12vw, 80px);
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            color: white;
+        }
+
+        .section-content {
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            line-height: 1.8;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: #90EE90;
+                flex-direction: column;
+                width: min(200px, 100%);
+                padding: 1rem;
+            }
+
+            .menu.active {
+                display: flex;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .content-wrapper {
+                width: 100%;
+                border-left: none;
+            }
+
+            .navbar {
+                flex-wrap: wrap;
+                padding: clamp(0.5rem, 1vw, 1rem);
+                height: 60px;
+            }
+
+            .logo {
+                position: static;
+                margin-right: auto;
+            }
+
+            .logo-text {
+                position: static;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-wrapper {
+                padding: 1.5rem 1rem;
+            }
+
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .content-wrapper {
+                padding: 1rem;
+                min-height: 90vh;
+            }
+
+            .section-heading {
+                margin-bottom: 0.5rem;
+            }
+
+            .section-content {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+        }
+    </style>
+</head>
+<body>
+      <nav class="navbar">
+        <div class="logo">
+            <img src='logo.png' alt="Grow It Logo">
+        </div>
+        <span class="logo-text">GROW IT!!</span>
+        <button class="menu-btn">☰</button>
+        <div class="menu">
+            <a href="2nd.html">Home</a>
+            <a href="#contact">Contact</a>
+	    <a href="login.html">Login/SignUp</a>
+        </div>
+    </nav>
+
+    <section id="home" class="section-container">
+        <div class="content-wrapper">
+            <h1 class="section-heading">Welcome to GROW IT!</h1>
+            <div class="section-content">
+                <p>At Grow It, we’re passionate about empowering plant enthusiasts, farmers, and gardeners with the latest technology to maintain the health of their plants. Our platform provides a simple yet powerful solution to diagnose plant diseases. Just upload an image of your plant, and our advanced image analysis system will detect any signs of disease within seconds.
+                    By identifying problems early, Grow It helps you take quick action to treat and prevent further spread, promoting a healthier environment for your plants. Whether you're a home gardener or a large-scale farmer, Grow It is here to support your journey to thriving, resilient plants.</p>
+    
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const menuBtn = document.querySelector('.menu-btn');
+        const menu = document.querySelector('.menu');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

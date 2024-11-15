@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detect Plant Disease - GROW IT!</title>
+    <style>
+        .detect-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .upload-box {
+            border: 2px dashed #4CAF50;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .upload-box:hover {
+            background-color: #f0f9f0;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin: 20px auto;
+        }
+        .results {
+            margin-top: 20px;
+            display: none;
+            text-align: left;
+        }
+        .prediction-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            background-color: #f0f0f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress {
+            background-color: #4CAF50;
+            height: 100%;
+            width: 0;
+            transition: width 0.5s ease-in-out;
+        }
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        .error {
+            color: red;
+            display: none;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="detect-container">
+        <h1>Plant Disease Detection</h1>
+        
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+            <h3>Upload Plant Image</h3>
+            <p>Click here or drag & drop an image</p>
+            <input type="file" id="fileInput" hidden accept="image/*">
+        </div>
+
+        <img id="preview" alt="Preview">
+        
+        <div class="loading">
+            Analyzing image...
+        </div>
+
+        <div class="error"></div>
+
+        <div class="results">
+            <h2>Detection Results</h2>
+            <div id="predictions"></div>
+        </div>
+    </div>
+
+    <script>
+        const uploadBox = document.querySelector('.upload-box');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const results = document.querySelector('.results');
+        const loading = document.querySelector('.loading');
+        const error = document.querySelector('.error');
+        const predictions = document.getElementById('predictions');
+
+        // Drag and drop handling
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.backgroundColor = '#f0f9f0';
+        });
+
+        uploadBox.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadBox.style.backgroundColor = '';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.backgroundColor = '';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleImage(file);
+            }
+        });
+
+        // File input handling
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleImage(e.target.files[0]);
+            }
+        });
+
+        function handleImage(file) {
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('image', file);
+
+            // Reset and show loading
+            results.style.display = 'none';
+            error.style.display = 'none';
+            loading.style.display = 'block';
+
+            // Send to API
+            fetch('http://localhost:5000/api/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+            })
+            .catch(err => {
+                loading.style.display = 'none';
+                error.textContent = err.message;
+                error.style.display = 'block';
+            });
+        }
+
+        function displayResults(data) {
+            predictions.innerHTML = '';
+            results.style.display = 'block';
+
+            data.top_3_predictions.forEach(pred => {
+                const confidence = (pred.confidence * 100).toFixed(1);
+                const disease = pred.disease.replace(/_/g, ' ');
+
+                const predElement = document.createElement('div');
+                predElement.className = 'prediction-item';
+                predElement.innerHTML = `
+                    <div><strong>${disease}</strong></div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${confidence}%"></div>
+                    </div>
+                    <div>Confidence: ${confidence}%</div>
+                `;
+                predictions.appendChild(predElement);
+            });
+        }
+    </script>
+</body>
+</html>

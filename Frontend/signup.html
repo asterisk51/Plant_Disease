@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - GROW IT!!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Times-New Roman,serif;
+            background-color: #dcfaed;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #57d07f;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f2e14;
+            font-size: 24px;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        header img {
+            position: absolute;
+            left: 20px;
+            width: 100px;
+            height: 100px;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 90px;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .signup-form h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .input-group input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding-right: 40px;
+        }
+
+        .input-group .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            cursor: pointer;
+            color: #666;
+            user-select: none;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .password-requirements ul {
+            list-style-type: none;
+            margin-top: 3px;
+            padding-left: 10px;
+        }
+
+        .password-requirements li {
+            margin-bottom: 2px;
+        }
+
+        .password-requirements li.valid {
+            color: #1fa34b;
+        }
+
+        .signup-btn {
+            padding: 12px;
+            font-size: 16px;
+            color: white;
+            background-color: #1fa34b;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        .signup-btn:hover {
+            background-color: #148c3a;
+        }
+
+        .signup-btn.loading {
+            background-color: #148c3a;
+            pointer-events: none;
+        }
+
+        .signup-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            padding: 8px;
+            background-color: #ffe6e6;
+            border-radius: 4px;
+        }
+
+        .login-container {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .login-text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-link {
+            color: #1fa34b;
+            text-decoration: none;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 500px) {
+            .signup-container {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src='logo.png'>
+        GROW IT!!
+    </header>
+
+    <div class="main-content">
+        <div class="signup-container">
+            <form class="signup-form" id="signupForm">
+                <h2>Create Account</h2>
+                <div class="input-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required>
+                    <span class="toggle-password" onclick="togglePassword()">👁️</span>
+                    <div class="password-requirements">
+                        Password requirements:
+                        <ul id="passwordRequirements">
+                            <li id="lengthReq">At least 8 characters</li>
+                            <li id="upperReq">One uppercase letter</li>
+                            <li id="lowerReq">One lowercase letter</li>
+                            <li id="numberReq">One number</li>
+                            <li id="specialReq">One special character</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="signup-btn" id="signupBtn">Create Account</button>
+                <p class="error-message" id="errorMessage"></p>
+
+                <div class="login-container">
+                    <p class="login-text">
+                        Already have an account? 
+                        <a href="login.html" class="login-link">Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+
+        function validatePassword(password) {
+            const requirements = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            // Update requirement indicators
+            document.getElementById('lengthReq').classList.toggle('valid', requirements.length);
+            document.getElementById('upperReq').classList.toggle('valid', requirements.upper);
+            document.getElementById('lowerReq').classList.toggle('valid', requirements.lower);
+            document.getElementById('numberReq').classList.toggle('valid', requirements.number);
+            document.getElementById('specialReq').classList.toggle('valid', requirements.special);
+
+            return Object.values(requirements).every(req => req);
+        }
+
+        document.getElementById('password').addEventListener('input', function() {
+            validatePassword(this.value);
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const signupBtn = document.getElementById('signupBtn');
+
+            // Show loading state
+            signupBtn.classList.add('loading');
+            errorMessage.style.display = 'none';
+
+            try {
+                // Validate password requirements
+                if (!validatePassword(password)) {
+                    throw new Error("Password does not meet all requirements");
+                }
+
+                // Check if passwords match
+                if (password !== confirmPassword) {
+                    throw new Error("Passwords do not match");
+                }
+
+                // Validate email format
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    throw new Error("Invalid email format");
+                }
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // For demonstration purposes
+                alert("Account created successfully!");
+                window.location.href = '/login.html'; // Redirect to login page
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                signupBtn.classList.remove('loading');
+            }
+        });
+    </script>
+</body>
+</html>
