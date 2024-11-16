@@ -4,13 +4,13 @@ The project is about detecting the disease that are very common among plants and
 
 ## Working 
 
-![Detection](Plant_Disease/images/Screenshot 2024-11-05 225544.png")
+![Detection](images/Screenshot%2024-11-05%225544.png")
 
 I have used a custom CNN algorithm to detect a plant disease from a pretrained database. In the above image the leave is of mango which is having disease Anthracnose. 
 
 ## Look and feel of the website
 
-![Front_page](images/Screenshot 2024-11-05 225348.png)
+![Front_page](images/Screenshot%2024-11-05%225348.png)
 
 This is the front page with brief introduction for the website.
 
