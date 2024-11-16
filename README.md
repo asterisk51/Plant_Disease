@@ -1,4 +1,4 @@
-### Plant disease detection
+# Plant disease detection
 
 The project is about detecting the disease that are very common among plants and to diagnose them before the eat the whole crop. This will help farmres in detecting the disease and getting its cure as soon as possible. 
 
