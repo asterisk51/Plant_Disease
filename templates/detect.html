@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Grow It - Admin Page</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: "poppin", sans-serif;
+      background-color: #f2fff6;
+    }
+    /* Navbar */
+    .navbar {
+      background-color: #48CA72;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-family: "Arsenal SC";
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+    }
+    
+    .logo img {
+      height: 30px; 
+      margin-right: 8px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+      font-size: 13px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      padding: 6px 12px;
+      border-radius: 5px;
+    }
+
+    .nav-links a:hover {
+      background-color: white;
+      color: #48CA72;
+    }
+
+    .nav-links a:active {
+      background-color: #388E6C;
+      color: white;
+    }
+
+    /* Main Content */
+    .main {
+      text-align: center;
+      flex: 1;
+      padding: 20px;
+    }
+    /* Disease Detection Section */
+    .upload-box {
+      border: 2px dashed #48CA72;
+      padding: 15px;
+      text-align: center;
+      width: 60%;
+      margin: 15px auto;
+      cursor: pointer;
+      border-radius: 3px;
+      background-color: white;
+    }
+    .upload-box:hover {
+      background-color: #eafaf0;
+    }
+    #preview {
+      max-width: 400px;
+      display: block;
+      margin: 20px auto;
+      display: none;
+    }
+    .loading {
+      display: none;
+      margin-top: 10px;
+    }
+    .error {
+      display: none;
+      color: red;
+      margin-top: 10px;
+    }
+    .main h1, .main h2{
+      text-align: center;
+
+    }
+    .results, .treatment {
+      background-color: white;
+      padding: 15px;
+      margin: 20px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: none;
+      max-width: 500px;
+      text-align: left;
+    }
+    .prediction-item {
+      margin-top: 8px;
+    }
+    .progress-bar {
+      background-color: #f0f0f0;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress {
+      background-color: #48CA72;
+      height: 100%;
+      width: 0;
+    }
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-top: 8px;
+    }
+    button {
+      background-color: #48CA72;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #3bb162;
+    }
+    /* Footer */
+    footer {
+      background-color: #48CA72;
+      height: 60px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
+      GROW IT
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('home')}}">Home</a>
+      <a href="#">Contact</a>
+      <a href="#">Sign Up</a>
+    </div>
+  </div>
+
+
+  <!-- Main Content -->
+  <div class="main">
+    <h1>Disease Detection</h1>
+    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+      Click to upload plant image
+      <input type="file" id="fileInput" hidden accept="image/*">
+    </div>
+    <img id="preview" alt="Preview">
+    <div class="loading">Analyzing image...</div>
+    <div class="error"></div>
+
+    <div class="results">
+      <h2>Detection Results</h2>
+      <div id="predictions"></div>
+    </div>
+
+    <!-- Treatment and Feedback -->
+    <div class="treatment" id="treatmentSection">
+      <h2>Treatment for <span id="diseaseName"></span></h2>
+      <p id="treatmentInfo"></p>
+
+      <h3>Feedback</h3>
+      <textarea id="feedback" placeholder="Write your feedback here..."></textarea>
+      <button onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer></footer>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const loading = document.querySelector('.loading');
+    const error = document.querySelector('.error');
+    const results = document.querySelector('.results');
+    const predictions = document.getElementById('predictions');
+    const treatmentSection = document.getElementById('treatmentSection');
+    const diseaseName = document.getElementById('diseaseName');
+    const treatmentInfo = document.getElementById('treatmentInfo');
+
+    const treatments = {
+      "leaf_blight": "Apply fungicide spray and remove infected leaves.",
+      "powdery_mildew": "Use sulfur-based spray and ensure good airflow.",
+      "rust": "Use rust-resistant plant varieties and fungicide."
+    };
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) handleImage(e.target.files[0]);
+    });
+
+    function handleImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      results.style.display = 'none';
+      treatmentSection.style.display = 'none';
+      error.style.display = 'none';
+      loading.style.display = 'block';
+
+      // Simulated API request
+      setTimeout(() => {
+        loading.style.display = 'none';
+        const fakeData = {
+          top_3_predictions: [
+            { disease: "leaf_blight", confidence: 0.92 },
+            { disease: "powdery_mildew", confidence: 0.05 },
+            { disease: "rust", confidence: 0.03 }
+          ]
+        };
+        displayResults(fakeData);
+      }, 1000);
+    }
+
+    function displayResults(data) {
+      predictions.innerHTML = '';
+      results.style.display = 'block';
+      const topDisease = data.top_3_predictions[0].disease;
+      diseaseName.textContent = topDisease.replace(/_/g, ' ');
+      treatmentInfo.textContent = treatments[topDisease] || "No treatment information available.";
+      treatmentSection.style.display = 'block';
+
+      data.top_3_predictions.forEach(pred => {
+        const confidence = (pred.confidence * 100).toFixed(1);
+        const disease = pred.disease.replace(/_/g, ' ');
+
+        const predElement = document.createElement('div');
+        predElement.className = 'prediction-item';
+        predElement.innerHTML = `
+          <div><strong>${disease}</strong></div>
+          <div class="progress-bar"><div class="progress" style="width: ${confidence}%"></div></div>
+          <div>Confidence: ${confidence}%</div>
+        `;
+        predictions.appendChild(predElement);
+      });
+    }
+
+    function submitFeedback() {
+      const feedback = document.getElementById('feedback').value.trim();
+      if (feedback) {
+        alert("Feedback submitted. Thank you!");
+        document.getElementById('feedback').value = '';
+      } else {
+        alert("Please enter feedback before submitting.");
+      }
+    }
+  </script>
+
+</body>
+</html>

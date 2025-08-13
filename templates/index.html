@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arsenal+SC:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<title>Grow It</title>
+  <style>
+    body {
+      margin: 0;
+      font-family:"poppins", sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #48CA72;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-family: "Arsenal SC";
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+    }
+    
+    .logo img {
+      height: 30px; 
+      margin-right: 8px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+      font-size: 13px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      padding: 6px 12px;
+      border-radius: 5px;
+    }
+
+    .nav-links a:hover {
+      background-color: white;
+      color: #48CA72;
+    }
+
+    .nav-links a:active {
+      background-color: #388E6C;
+      color: white;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: url("{{ url_for('static', filename='background.jpeg') }}") center/cover no-repeat;
+      height: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-text {
+      background-color: rgba(0, 0, 0, 0.25);
+      color: white;
+      padding: 30px;
+      max-width: 450px;
+      font-size: 13px;
+      text-align: center;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .hero-text h1 {
+      margin-top: 0;
+    }
+
+    /* Features Section */
+    .features {
+      background-color: #D7F7E0;
+      display: flex;
+      justify-content: center;
+      gap: 80px; /* Increased spacing between cards */
+      padding: 80px 0; /* More top and bottom space */
+      flex-wrap: wrap;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 30px;
+      text-align: center;
+      text-decoration: none;
+      color: black;
+      width: 200px; /* Increased size */
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .feature-card img {
+      width: 120px; /* Bigger icons */
+      margin: 20px 0;
+    }
+
+    /* Footer color block */
+    .footer {
+      background-color: #48CA72;
+      height: 100px;
+    }
+
+    @media (max-width: 768px) {
+      .features {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
+      GROW IT
+    </div>
+    <div class="nav-links">
+      <a href="#">Contact</a>
+      <a href="{{ url_for('signup')}}">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Welcome</h1>
+      <p>At Grow It, we're passionate about empowering plant enthusiasts, farmers, and gardeners with the latest technology to maintain the health of their plants. Our platform provides a simple yet powerful solution to diagnose plant diseases. Just upload an image of your plant, and our advanced image analysis system will detect any signs of disease within seconds. By identifying problems early, Grow It helps you take quick action to treat and prevent further spread, promoting a healthier environment for your plants. Whether you're a home gardener or a large-scale farmer, Grow It is here to support your journey to thriving, resilient plants.</p>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+<div class="features">
+  <!-- Create Workspace -->
+  <a href="create_workspace.html" class="feature-card">
+    <h3>Create Workspace</h3>
+    <img src="{{ url_for('static', filename='create.png')}}" alt="Create Workspace">
+  </a>
+
+  <!-- Detect Disease -->
+  <a href="{{ url_for('detect_page')}}" class="feature-card">
+    <h3>Detect Disease</h3>
+    <img src="{{ url_for('static', filename='detect.png')}}" alt="Detect Disease">
+  </a>
+
+  <!-- Upload Database -->
+  <a href="upload_database.html" class="feature-card">
+    <h3>Upload Database</h3>
+    <img src="{{ url_for('static', filename='database.png')}}" alt="Upload Database">
+  </a>
+</div>
+
+
+  <!-- Footer -->
+  <div class="footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Arsenal+SC:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Sign Up - Grow It</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #48CA72;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-family: "Arsenal SC";
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+    }
+    .logo img {
+      height: 30px;
+      margin-right: 8px;
+    }
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .nav-links a:hover {
+      background-color: white;
+      color: #48CA72;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: url("{{ url_for('static', filename='background.jpeg') }}") center/cover no-repeat;
+      height: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .signup-form {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 8px;
+      color: white;
+      width: 300px;
+      text-align: center;
+    }
+    .signup-form h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .signup-form input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+    }
+    .signup-form button {
+      background-color: #48CA72;
+      border: none;
+      padding: 10px;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    .signup-form button:hover {
+      background-color: #3da862;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #48CA72;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
+      GROW IT
+    </div>
+    <div class="nav-links">
+      <a href="#">Contact</a>
+      <a href="{{ url_for('signup') }}">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- Hero / Signup Form -->
+  <div class="hero">
+    <form class="signup-form" method="POST" action="{{ url_for('signup') }}">
+      <h2>Create Account</h2>
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Management — GROW IT</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Arsenal+SC:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --green:#48CA72;
+      --green-dark:#2FA358;
+      --green-active:#3eb968;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --bg:#f7fff9;
+      --border:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Topbar */
+    .topbar{
+      height:64px;
+      background:var(--green);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 24px;
+      flex-shrink:0;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#fff;
+      font-weight:700;
+      font-size:28px;
+      font-family:"Arsenal SC","Poppins",sans-serif;
+    }
+    .brand img {
+      height:40px;
+      width:auto;
+    } 
+    .settings {
+      font-size: 40px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      color: white;
+    }
+    .settings:hover {
+      transform: rotate(90deg);
+    }
+
+    /* Layout */
+    .shell{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      flex:1 1 auto;
+      min-height:0;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      background:var(--green-dark);
+      color:#fff;
+      padding:18px 0 24px;
+    }
+    .menu-title{
+      font-weight:700;
+      font-size:14px;
+      padding:8px 22px 14px;
+      opacity:.9;
+    }
+    .nav{
+      display:flex;flex-direction:column;gap:2px;
+    }
+    .nav a{
+      color:#fff;
+      text-decoration:none;
+      padding:14px 22px;
+      font-weight:700;
+    }
+    .nav a:hover{background:  #48CA72}
+    .nav a.active{
+      background:var(--green-active);
+      box-shadow:inset 3px 0 0 rgba(255,255,255,.85);
+    }
+
+    /* Main */
+    .main{
+      padding:24px;
+      overflow:auto;
+    }
+    .page{
+      max-width:980px;
+      margin:0 auto;
+    }
+    .page-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin:6px 0 18px;
+    }
+    .title{
+      font-weight:800;
+      font-size:28px;
+      color:#232323;
+    }
+    .title-underline{
+      height:2px;background:#bdbdbd;opacity:.8;margin-top:6px;
+    }
+    .search{
+      position:relative;
+      width:320px;max-width:40ch;flex:0 0 auto;
+    }
+    .search input{
+      width:100%;
+      height:38px;
+      background:#fff;
+      border:1px solid #cfd6cf;
+      border-radius:999px;
+      padding:0 40px 0 16px;
+      font-size:14px;
+    }
+    .search svg{
+      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      width:18px;height:18px;opacity:.7
+    }
+
+    /* Table */
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:6px;
+      overflow:hidden;
+      width:100%;
+      margin-top:18px;
+    }
+    table{
+      border-collapse:separate;
+      border-spacing:0;
+      width:100%;
+      font-size:14px;
+    }
+    thead th{
+      background:#f9fafb;
+      border-bottom:1px solid var(--border);
+      padding:12px 14px;
+      font-weight:700;
+      text-align:left;
+    }
+    tbody td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      color:#374151;
+    }
+    tbody tr:last-child td{border-bottom:none}
+    .muted{color:var(--muted)}
+    .actions{
+      display:flex;gap:12px;
+    }
+    .icon{
+      width:18px;height:18px;cursor:pointer;opacity:.8;
+    }
+    .icon:hover{opacity:1}
+
+    /* Footer */
+    .footer{
+      background-color:  #48CA72;
+      height:60px;
+      flex-shrink:0;
+    }
+
+    @media (max-width: 960px){
+      .shell{grid-template-columns:220px 1fr}
+    }
+    @media (max-width: 760px){
+      .shell{grid-template-columns:1fr}
+      .sidebar{position:sticky;top:0}
+      .page-header{flex-direction:column;align-items:flex-start}
+      .search{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='logo2.png')}}" alt="GROW IT Logo">
+      GROW IT
+    </div>
+    <div class="settings">⚙</div>
+  </div>
+
+  <!-- Shell -->
+  <div class="shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="nav">
+        <a href="{{ url_for('admin_page')}}">Dashboard</a>
+        <a class="active" href="#">User Management</a>
+        <a href="#">Image Submissions</a>
+        <a href="#">Disease &amp; Treatment</a>
+        <a href="#">Database</a>
+        <a href="#">Feedback &amp; Support</a>
+        <a href="#">Model Management</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="page">
+        <div class="page-header">
+          <div style="flex:1 1 auto;">
+            <div class="title">User Management</div>
+            <div class="title-underline"></div>
+          </div>
+          <label class="search">
+            <input type="text" placeholder=" Search" />
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 20.3 16.7 16a7.5 7.5 0 1 0-1.7 1.7L20.3 21 21 20.3ZM4.5 11a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0Z"/>
+            </svg>
+          </label>
+        </div>
+        <!-- Table -->
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:28%">Name</th>
+                <th style="width:32%">Email</th>
+                <th style="width:16%">Role</th>
+                <th style="width:14%">Last Login</th>
+                <th style="width:10%">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Pooja Choudhary</td>
+                <td class="muted">dfhs23@gmail.com</td>
+                <td>Farmer</td>
+                <td>6 hrs</td>
+                <td>
+                  <div class="actions">
+                    <!-- edit -->
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Edit">
+                      <path d="M3 17.2V21h3.8l11-11.1-3.8-3.8L3 17.2Zm14.8-9c.4-.4.4-1 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0l-1.6 1.6 3.8 3.8 1.8-1.4Z"/>
+                    </svg>
+                    <!-- delete -->
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Delete">
+                      <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"/>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Agrima Goyal</td>
+                <td class="muted">pikie27@gmail.com</td>
+                <td>Support</td>
+                <td>1 day</td>
+                <td>
+                  <div class="actions">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Edit">
+                      <path d="M3 17.2V21h3.8l11-11.1-3.8-3.8L3 17.2Zm14.8-9c.4-.4.4-1 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0l-1.6 1.6 3.8 3.8 1.8-1.4Z"/>
+                    </svg>
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Delete">
+                      <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"/>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Surabhi Abhyankar</td>
+                <td class="muted">huuhh77@gmail.com</td>
+                <td>Admin</td>
+                <td>12hrs</td>
+                <td>
+                  <div class="actions">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Edit">
+                      <path d="M3 17.2V21h3.8l11-11.1-3.8-3.8L3 17.2Zm14.8-9c.4-.4.4-1 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0l-1.6 1.6 3.8 3.8 1.8-1.4Z"/>
+                    </svg>
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Delete">
+                      <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7	H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"/>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Jahanvi Rathore</td>
+                <td class="muted">oer043@gmail.com</td>
+                <td>Admin</td>
+                <td>4 hrs</td>
+                <td>
+                  <div class="actions">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Edit">
+                      <path d="M3 17.2V21h3.8l11-11.1-3.8-3.8L3 17.2Zm14.8-9c.4-.4.4-1 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0l-1.6 1.6 3.8 3.8 1.8-1.4Z"/>
+                    </svg>
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-label="Delete">
+                      <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7	H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"/>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer"></div>
+</body>
+</html>
