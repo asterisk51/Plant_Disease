@@ -46,6 +46,12 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    message = db.Column(db.String(300), nullable=False)
+
 # ------------------------------------------------------------------------------
 # Globals for model + metadata
 # ------------------------------------------------------------------------------
@@ -54,12 +60,12 @@ class_names = None
 model_metrics = None
 
 # Paths for model/metrics/class names
-MODEL_KERAS_PATH = r"D:\ML\Plant_disease_2\backend\plant_disease_model.keras"
-MODEL_WEIGHTS_PATH = r"D:\ML\Plant_disease_2\backend\plant_disease_model.weights.h5"
-HISTORY_JSON_PATH = r"D:\ML\Plant_disease_2\backend\training_history.json"
-HISTORY_NPY_PATH = r"D:\ML\Plant_disease_2\backend\training_history.npy"
-CLASS_NAMES_TXT_PATH = r"D:\ML\Plant_disease_2\backend\class_names.txt"
-TRAIN_DIR_FALLBACK = r"D:\ML\Plant_disease_2\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train"
+MODEL_KERAS_PATH = r"D:\Plant_disease\backend\plant_disease_model.keras"
+MODEL_WEIGHTS_PATH = r"D:\Plant_disease\backend\plant_disease_model.weights.h5"
+# HISTORY_JSON_PATH = r"D:\ML\Plant_disease_2\backend\training_history.json"
+HISTORY_NPY_PATH = r"D:\Plant_disease\backend\training_history.npy"
+CLASS_NAMES_TXT_PATH = r"D:\Plant_disease\backend\class_names.txt"
+TRAIN_DIR_FALLBACK = r"D:\ML\Plant_disease(not to be presented)\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train"
 
 # ------------------------------------------------------------------------------
 # Helpers
@@ -256,6 +262,18 @@ def get_model_info():
 # Page routes
 # ------------------------------------------------------------------------------
 
+@app.route("/send_message", methods=["POST"])
+def send_message():
+    data = request.json
+    if not all(k in data for k in ("username", "email", "message")):
+        return jsonify({"error": "Missing fields"}), 400
+
+    new_msg = Contact(username=data["username"], email=data["email"], message=data["message"])
+    db.session.add(new_msg)
+    db.session.commit()
+    return jsonify({"success": True})
+
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -278,9 +296,21 @@ def detect_page():
 def admin_page():
     return render_template("admin.html")
 
+@app.route("/workspace")
+def workspace():
+    return render_template("workspace.html")
+
+@app.route("/database")
+def database():
+    return render_template("database.html")
+
 @app.route("/user")
 def user_page():
     return render_template("user.html")
+
+@app.route("/contact")
+def contact_page():
+    return render_template("contact.html")
 
 # ------------------------------------------------------------------------------
 # Main entry

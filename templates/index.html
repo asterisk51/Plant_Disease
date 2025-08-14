@@ -141,7 +141,7 @@
       GROW IT
     </div>
     <div class="nav-links">
-      <a href="#">Contact</a>
+      <a href="{{ url_for('contact_page')}}">Contact</a>
       <a href="{{ url_for('signup')}}">Sign Up</a>
     </div>
   </div>
@@ -157,9 +157,9 @@
   <!-- Features Section -->
 <div class="features">
   <!-- Create Workspace -->
-  <a href="create_workspace.html" class="feature-card">
-    <h3>Create Workspace</h3>
-    <img src="{{ url_for('static', filename='create.png')}}" alt="Create Workspace">
+  <a href="{{ url_for('workspace')}}" class="feature-card">
+    <h3>My Workspace</h3>
+    <img src="{{ url_for('static', filename='create.png')}}" alt="My Workspace">
   </a>
 
   <!-- Detect Disease -->
@@ -169,7 +169,7 @@
   </a>
 
   <!-- Upload Database -->
-  <a href="upload_database.html" class="feature-card">
+  <a href="{{ url_for('database')}}" class="feature-card">
     <h3>Upload Database</h3>
     <img src="{{ url_for('static', filename='database.png')}}" alt="Upload Database">
   </a>

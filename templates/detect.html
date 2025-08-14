@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-  <title>Grow It - Admin Page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detect Disease - Grow It</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Arsenal+SC:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      font-family: "poppin", sans-serif;
-      background-color: #f2fff6;
+      font-family: "Poppins", sans-serif;
+      background-color: #D7F7E0; /* Matches index feature section bg */
     }
+
     /* Navbar */
     .navbar {
       background-color: #48CA72;
@@ -32,11 +30,19 @@
       display: flex;
       align-items: center;
       font-family: "Arsenal SC";
+      font-weight: bold;
+    }
+
+    /* Remove underline & make full logo clickable */
+    .logo a {
+      text-decoration: none;
       color: white;
       font-size: 30px;
       font-weight: bold;
+      display: flex;
+      align-items: center;
     }
-    
+
     .logo img {
       height: 30px; 
       margin-right: 8px;
@@ -58,167 +64,138 @@
       color: #48CA72;
     }
 
-    .nav-links a:active {
-      background-color: #388E6C;
-      color: white;
+    /* Page Container */
+    .page-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 20px;
+      min-height: calc(100vh - 180px);
     }
 
-    /* Main Content */
-    .main {
-      text-align: center;
-      flex: 1;
-      padding: 20px;
-    }
-    /* Disease Detection Section */
-    .upload-box {
-      border: 2px dashed #48CA72;
-      padding: 15px;
-      text-align: center;
-      width: 60%;
-      margin: 15px auto;
-      cursor: pointer;
-      border-radius: 3px;
-      background-color: white;
-    }
-    .upload-box:hover {
-      background-color: #eafaf0;
-    }
-    #preview {
-      max-width: 400px;
-      display: block;
-      margin: 20px auto;
-      display: none;
-    }
-    .loading {
-      display: none;
-      margin-top: 10px;
-    }
-    .error {
-      display: none;
-      color: red;
-      margin-top: 10px;
-    }
-    .main h1, .main h2{
-      text-align: center;
-
-    }
-    .results, .treatment {
-      background-color: white;
-      padding: 15px;
-      margin: 20px auto;
-      border-radius: 8px;
+    /* Feature Card Style */
+    .detect-card {
+      background: white;
+      border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 30px;
+      text-align: center;
+      width: 300px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .detect-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .detect-card img {
+      width: 120px;
+      margin: 20px 0;
+    }
+
+    input[type="file"] {
+      margin: 15px 0;
+    }
+
+    #preview {
+      max-width: 100%;
+      margin: 10px 0;
       display: none;
-      max-width: 500px;
+      border-radius: 8px;
+    }
+
+    #loading {
+      display: none;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #555;
+    }
+
+    #results {
+      display: none;
+      margin-top: 15px;
       text-align: left;
     }
-    .prediction-item {
-      margin-top: 8px;
+
+    .error {
+      color: red;
+      display: none;
+      margin-top: 10px;
     }
-    .progress-bar {
-      background-color: #f0f0f0;
-      height: 20px;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .progress {
-      background-color: #48CA72;
-      height: 100%;
-      width: 0;
-    }
-    textarea {
-      width: 100%;
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-top: 8px;
-    }
+
     button {
-      background-color: #48CA72;
+      background: #48CA72;
       color: white;
-      padding: 8px 15px;
+      padding: 10px 15px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 14px;
       margin-top: 10px;
     }
+
     button:hover {
-      background-color: #3bb162;
+      background: #3bb362;
     }
+
     /* Footer */
-    footer {
+    .footer {
       background-color: #48CA72;
-      height: 60px;
-      flex-shrink: 0;
+      height: 80px;
     }
   </style>
 </head>
 <body>
 
-  
   <!-- Navbar -->
   <div class="navbar">
     <div class="logo">
-      <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
-      GROW IT
+      <a href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
+        GROW IT
+      </a>
     </div>
     <div class="nav-links">
-      <a href="{{ url_for('home')}}">Home</a>
-      <a href="#">Contact</a>
-      <a href="#">Sign Up</a>
+      <a href="{{ url_for('contact_page')}}">Contact</a>
+      <a href="{{ url_for('signup')}}">Sign Up</a>
     </div>
   </div>
 
+  <!-- Detect Card Section -->
+  <div class="page-content">
+    <div class="detect-card">
+      <h3>Detect Disease</h3>
+      <input type="file" id="imageUpload" accept="image/*" />
+      <img id="preview" src="" alt="Image Preview" />
 
-  <!-- Main Content -->
-  <div class="main">
-    <h1>Disease Detection</h1>
-    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-      Click to upload plant image
-      <input type="file" id="fileInput" hidden accept="image/*">
-    </div>
-    <img id="preview" alt="Preview">
-    <div class="loading">Analyzing image...</div>
-    <div class="error"></div>
+      <div id="loading">Predicting... Please wait.</div>
 
-    <div class="results">
-      <h2>Detection Results</h2>
-      <div id="predictions"></div>
-    </div>
+      <div id="results">
+        <h4>Prediction Results</h4>
+        <ul id="predictionList"></ul>
+      </div>
 
-    <!-- Treatment and Feedback -->
-    <div class="treatment" id="treatmentSection">
-      <h2>Treatment for <span id="diseaseName"></span></h2>
-      <p id="treatmentInfo"></p>
-
-      <h3>Feedback</h3>
-      <textarea id="feedback" placeholder="Write your feedback here..."></textarea>
-      <button onclick="submitFeedback()">Submit Feedback</button>
+      <div class="error" id="error"></div>
     </div>
   </div>
 
   <!-- Footer -->
-  <footer></footer>
+  <div class="footer"></div>
 
   <script>
-    const fileInput = document.getElementById('fileInput');
+    const imageUpload = document.getElementById('imageUpload');
     const preview = document.getElementById('preview');
-    const loading = document.querySelector('.loading');
-    const error = document.querySelector('.error');
-    const results = document.querySelector('.results');
-    const predictions = document.getElementById('predictions');
-    const treatmentSection = document.getElementById('treatmentSection');
-    const diseaseName = document.getElementById('diseaseName');
-    const treatmentInfo = document.getElementById('treatmentInfo');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const predictionList = document.getElementById('predictionList');
+    const error = document.getElementById('error');
 
-    const treatments = {
-      "leaf_blight": "Apply fungicide spray and remove infected leaves.",
-      "powdery_mildew": "Use sulfur-based spray and ensure good airflow.",
-      "rust": "Use rust-resistant plant varieties and fungicide."
-    };
-
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files[0]) handleImage(e.target.files[0]);
+    imageUpload.addEventListener('change', () => {
+      const file = imageUpload.files[0];
+      if (file) {
+        handleImage(file);
+      }
     });
 
     function handleImage(file) {
@@ -230,57 +207,42 @@
       reader.readAsDataURL(file);
 
       results.style.display = 'none';
-      treatmentSection.style.display = 'none';
       error.style.display = 'none';
       loading.style.display = 'block';
 
-      // Simulated API request
-      setTimeout(() => {
-        loading.style.display = 'none';
-        const fakeData = {
-          top_3_predictions: [
-            { disease: "leaf_blight", confidence: 0.92 },
-            { disease: "powdery_mildew", confidence: 0.05 },
-            { disease: "rust", confidence: 0.03 }
-          ]
-        };
-        displayResults(fakeData);
-      }, 1000);
+      const formData = new FormData();
+      formData.append('image', file);
+
+      fetch('/api/predict', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          loading.style.display = 'none';
+          if (data.success) {
+            displayResults(data);
+          } else {
+            error.textContent = data.error || 'Prediction failed.';
+            error.style.display = 'block';
+          }
+        })
+        .catch(err => {
+          loading.style.display = 'none';
+          error.textContent = 'Error connecting to server: ' + err;
+          error.style.display = 'block';
+        });
     }
 
     function displayResults(data) {
-      predictions.innerHTML = '';
-      results.style.display = 'block';
-      const topDisease = data.top_3_predictions[0].disease;
-      diseaseName.textContent = topDisease.replace(/_/g, ' ');
-      treatmentInfo.textContent = treatments[topDisease] || "No treatment information available.";
-      treatmentSection.style.display = 'block';
-
+      predictionList.innerHTML = '';
       data.top_3_predictions.forEach(pred => {
-        const confidence = (pred.confidence * 100).toFixed(1);
-        const disease = pred.disease.replace(/_/g, ' ');
-
-        const predElement = document.createElement('div');
-        predElement.className = 'prediction-item';
-        predElement.innerHTML = `
-          <div><strong>${disease}</strong></div>
-          <div class="progress-bar"><div class="progress" style="width: ${confidence}%"></div></div>
-          <div>Confidence: ${confidence}%</div>
-        `;
-        predictions.appendChild(predElement);
+        const li = document.createElement('li');
+        li.textContent = `${pred.disease} — ${(pred.confidence * 100).toFixed(2)}%`;
+        predictionList.appendChild(li);
       });
-    }
-
-    function submitFeedback() {
-      const feedback = document.getElementById('feedback').value.trim();
-      if (feedback) {
-        alert("Feedback submitted. Thank you!");
-        document.getElementById('feedback').value = '';
-      } else {
-        alert("Please enter feedback before submitting.");
-      }
+      results.style.display = 'block';
     }
   </script>
-
 </body>
 </html>

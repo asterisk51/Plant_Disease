@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grow It - My Workspace</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: white;
+    }
+    header {
+        background-color: #4CAF50;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    header img {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+    }
+    .workspace-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px;
+    }
+    .tabs {
+        margin: 0 20px;
+        font-size: 14px;
+    }
+    .tabs label {
+        margin-right: 15px;
+        cursor: pointer;
+    }
+    .tabs input {
+        margin-right: 5px;
+    }
+    .new-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        float: right;
+        margin-right: 20px;
+        cursor: pointer;
+    }
+    table {
+        width: calc(100% - 40px);
+        border-collapse: collapse;
+        margin: 10px 20px;
+        font-size: 14px;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        font-weight: normal;
+    }
+    .date-label {
+        background-color: black;
+        color: white;
+        display: inline-block;
+        padding: 3px 8px;
+        font-size: 12px;
+        border-radius: 3px;
+        margin: 10px 20px 0;
+    }
+    .fa {
+        margin-right: 5px;
+    }
+    .checkbox {
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo"> GROW IT
+</header>
+
+<div class="workspace-title">My Workspace</div>
+
+<div class="tabs">
+    <label><input type="radio" name="tab" checked> Today</label>
+    <label><input type="radio" name="tab"> Archived</label>
+    <label><input type="radio" name="tab"> All</label>
+    <span class="new-btn">NEW</span>
+</div>
+
+<div>
+    <div class="date-label">12 August</div>
+    <table>
+        <tr>
+            <th><i class="fa-solid fa-font"></i> Name</th>
+            <th><i class="fa-solid fa-seedling"></i> Category</th>
+            <th><i class="fa-solid fa-calendar-days"></i> Date-Time</th>
+            <th><i class="fa-solid fa-virus"></i> Disease</th>
+            <th><i class="fa-solid fa-notes-medical"></i> Treatment</th>
+            <th><i class="fa-solid fa-file-lines"></i> Notes</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td class="checkbox"><input type="checkbox"></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td class="checkbox"><input type="checkbox"></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td class="checkbox"><input type="checkbox"></td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <div class="date-label">13 August</div>
+    <table>
+        <tr>
+            <th><i class="fa-solid fa-font"></i> Name</th>
+            <th><i class="fa-solid fa-seedling"></i> Category</th>
+            <th><i class="fa-solid fa-calendar-days"></i> Date-Time</th>
+            <th><i class="fa-solid fa-virus"></i> Disease</th>
+            <th><i class="fa-solid fa-notes-medical"></i> Treatment</th>
+            <th><i class="fa-solid fa-file-lines"></i> Notes</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td class="checkbox"><input type="checkbox"></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td class="checkbox"><input type="checkbox"></td>
+        </tr>
+        <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td class="checkbox"><input type="checkbox"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

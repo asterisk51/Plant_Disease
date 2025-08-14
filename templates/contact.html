@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Arsenal+SC:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <title>Contact Us - Grow It</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "poppins", sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #48CA72;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-family: "Arsenal SC";
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+    }
+    
+    .logo img {
+      height: 30px; 
+      margin-right: 8px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+      font-size: 13px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      padding: 6px 12px;
+      border-radius: 5px;
+    }
+
+    .nav-links a:hover {
+      background-color: white;
+      color: #48CA72;
+    }
+
+    .nav-links a:active {
+      background-color: #388E6C;
+      color: white;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: url("{{ url_for('static', filename='background.jpeg') }}") center/cover no-repeat;
+      min-height: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .contact-container {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      border-radius: 10px;
+      color: white;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .contact-container h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .form-group textarea {
+      resize: none;
+      height: 100px;
+    }
+
+    .submit-btn {
+      background-color: #48CA72;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background-color: #3fa961;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #48CA72;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
+      GROW IT
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('home')}}">Home</a>
+      <a href="{{ url_for('signup')}}">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- Hero Section with Contact Form -->
+  <div class="hero">
+    <div class="contact-container">
+      <h1>Contact Us</h1>
+      <form action="/send_message" method="POST">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Your Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Your Message</label>
+          <textarea id="message" name="message" placeholder="Write your message here..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer"></div>
+
+</body>
+</html>

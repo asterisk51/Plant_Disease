@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Upload - GROW IT</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: white;
+    }
+
+    /* Header bar */
+    .header {
+      background: #2ecc71;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .header img {
+      height: 28px;
+      margin-right: 8px;
+    }
+
+    /* Page title */
+    .title {
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* Filter buttons row */
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px;
+    }
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .filter-btn.green {
+      background: #2ecc71;
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: white;
+    }
+
+    /* Top right controls */
+    .top-right {
+      position: absolute;
+      right: 20px;
+      top: 65px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .upload-btn {
+      background: #2ecc71;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Table styling */
+    table {
+      width: calc(100% - 40px);
+      margin: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 16px; /* Increased padding for bigger rows */
+      text-align: left;
+      height: 50px; /* Increased row height */
+    }
+    th {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo">
+    GROW IT
+  </div>
+
+  <!-- Title -->
+  <div class="title">Database Upload</div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-btn">📅 Today</div>
+    <div class="filter-btn">🗄 Archived</div>
+    <div class="filter-btn green">All</div>
+  </div>
+
+  <!-- Top right controls -->
+  <div class="top-right">
+    <span>⚙ 🔍</span>
+    <button class="upload-btn">Upload Image</button>
+  </div>
+
+  <!-- Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>🔤 Name</th>
+        <th>📅 Date-Time</th>
+        <th>🌱 Crop</th>
+        <th>➕ File Size</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
