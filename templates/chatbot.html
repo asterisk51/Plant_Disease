@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Standalone Chatbot</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f7ff; margin:0; padding:20px; }
+    .chat { max-width: 700px; margin:auto; display:flex; flex-direction:column; gap:10px; }
+    .msg { padding:10px; border-radius:8px; white-space:pre-wrap; }
+    .user { background:#d0e4ff; align-self:flex-end; }
+    .assistant { background:#e4ffd9; align-self:flex-start; }
+    .sys { background:#eee; font-style:italic; }
+    textarea { width:100%; min-height:60px; }
+  </style>
+</head>
+<body>
+  <div class="chat" id="chat"></div>
+  <div style="max-width:700px;margin:auto;margin-top:10px;">
+    <select id="provider">
+      <option value="openai">OpenAI (GPT)</option>
+      <option value="gemini">Google Gemini</option>
+    </select>
+    <input id="model" placeholder="auto" />
+    <br><br>
+    <textarea id="input" placeholder="Ask me anything..."></textarea><br>
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+</body>
+</html>

@@ -10,6 +10,60 @@ import os
 import json as pyjson
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
+from dotenv import load_dotenv
+
+#------------------------------------------------------------------------------
+# Chat bot
+#------------------------------------------------------------------------------
+
+load_dotenv()
+
+app = Flask(__name__)
+CORS(app)
+
+DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
+DEFAULT_GEMINI_MODEL = "gemini-1.5-flash"
+SYSTEM_PROMPT = "You are a helpful assistant. Answer clearly and concisely."
+
+# ---------- LLM Connectors ----------
+def call_openai(messages, model=None):
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY not set")
+
+    from openai import OpenAI
+    client = OpenAI(api_key=api_key)
+
+    resp = client.chat.completions.create(
+        model=model or DEFAULT_OPENAI_MODEL,
+        messages=messages,
+        temperature=0.7,
+    )
+    return resp.choices[0].message.content.strip()
+
+
+def call_gemini(messages, model=None):
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise RuntimeError("GOOGLE_API_KEY not set")
+
+    import google.generativeai as genai
+    genai.configure(api_key=api_key)
+
+    compiled = []
+    for m in messages:
+        prefix = (
+            "System: " if m["role"] == "system"
+            else "User: " if m["role"] == "user"
+            else "Assistant: "
+        )
+        compiled.append(f"{prefix}{m['content']}")
+    compiled.append("Assistant:")
+
+    model_obj = genai.GenerativeModel(model or DEFAULT_GEMINI_MODEL)
+    resp = model_obj.generate_content("\n\n".join(compiled))
+    return getattr(resp, "text", "")
+
 
 # ------------------------------------------------------------------------------
 # App setup (single instance)
@@ -257,6 +311,28 @@ def get_model_info():
         )
     except Exception as e:
         return jsonify({"error": str(e), "success": False}), 500
+    
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    provider = data.get("provider")
+    user_msg = data.get("message", "")
+    history = data.get("history", [])
+
+    if not any(m["role"] == "system" for m in history):
+        history.insert(0, {"role": "system", "content": SYSTEM_PROMPT})
+
+    history.append({"role": "user", "content": user_msg})
+
+    try:
+        if provider == "openai":
+            reply = call_openai(history, data.get("model"))
+        else:
+            reply = call_gemini(history, data.get("model"))
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 # ------------------------------------------------------------------------------
 # Page routes
@@ -311,6 +387,11 @@ def user_page():
 @app.route("/contact")
 def contact_page():
     return render_template("contact.html")
+
+@app.route("/chatbot")
+def chatbot():
+    return render_template("chatbot.html", system=SYSTEM_PROMPT)
+
 
 # ------------------------------------------------------------------------------
 # Main entry
