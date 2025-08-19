@@ -195,21 +195,22 @@
     }
 
     .hero__right {
-      position: absolute;
-      right: 50px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 14px;
-      max-width: 300px;
-      text-align: right;
-      opacity: 0;
-      transform: translateX(50px);
-      animation: fadeRight 1.5s ease-out forwards;
-      animation-delay: 0.5s;
-    }
+  position: absolute;
+  right: 145px; /* was 50px, adjust as needed */
+  top: 60%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  max-width: 300px;
+  text-align: right;
+  opacity: 0;
+  transform: translateX(50px);
+  animation: fadeRight 1.5s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
 
     .subhead {
       font-family: "Playfair Display", Georgia, serif;
@@ -243,6 +244,7 @@
       box-shadow: 0 8px 16px rgba(46, 125, 89, .35);
       margin-top: 10px;
       transition: all 0.3s ease;
+      
     }
 
     .btn:hover {
@@ -355,6 +357,7 @@
       font-size: 22px;
       margin: 0 0 10px;
       color: #1e2d26;
+      text-align: center;
     }
 
     .card__copy {
@@ -362,32 +365,37 @@
       font-size: 14px;
       line-height: 1.55;
       max-width: 56ch;
+      text-align: center;
     }
 
     .card:hover {
       transform: translateY(-6px) scale(1.02);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
-
     .cta {
-      margin-top: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border: 0;
-      border-radius: var(--radius-pill);
-      background: #e9f2ec;
-      color: #163a2b;
-      font-weight: 700;
-      font-size: 13px;
-      transition: all 0.3s ease;
-    }
+  margin: 12px auto 0;
+  display: inline-flex;
+  align-items: center;   /* fixed missing value */
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: #e9f2ec;
+  color: #163a2b;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.3s ease;
 
-    .cta:hover {
-      filter: brightness(1.05);
-      transform: scale(1.05);
-    }
+  margin-left: 130px;   /* pushes it a bit to the right */
+}
+
+
+
+.cta:hover {
+  filter: brightness(1.05);
+  transform: scale(1.05);
+}
 
     .chev {
       width: 14px;
@@ -510,7 +518,7 @@
 
       <div class="hero__right" style="display: flex; flex-direction: column; align-items: flex-end; text-align: right;">
         <div class="subhead">We Listen, Diagnose<br />And Heal</div>
-        <button class="btn" onclick="scrollToSection('detect')">Get Started</button>
+        <button class="btn" onclick="scrollToSection('detect')">Sign Up</button>
       </div>
 
     </div>
