@@ -10,10 +10,17 @@
   <style>
     body {
       margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       font-family: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: linear-gradient(#2f5e33, #d6b889);
       color: #1d2d20;
       text-align: center;
+    }
+
+    main {
+      flex: 1;
     }
 
     /* Navbar layout */
@@ -38,36 +45,34 @@
       justify-self: center;
     }
 
-nav a {
-  color: #fff;
-  text-decoration: none;
-  opacity: .9; /* same subtle fade */
-  font-weight: 600;
-  font-size: 14px;
-  padding-block: 6px; /* instead of padding-bottom */
-  position: relative;
-}
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      opacity: .9;
+      font-weight: 600;
+      font-size: 14px;
+      padding-block: 6px;
+      position: relative;
+    }
 
-/* Underline animation (centered) */
-nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;       /* <-- needed for centering */
-  bottom: -4px;   /* match index */
-  height: 2px;
-  width: 0;
-  margin: auto;   /* center underline */
-  background: #fff;
-  border-radius: 2px; /* smoother */
-  transition: width 0.3s ease;
-}
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 2px;
+      width: 0;
+      margin: auto;
+      background: #fff;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
 
-nav a:hover::after,
-nav a.active::after {
-  width: 100%;
-}
-
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
 
     /* Search */
     .search {
@@ -183,12 +188,13 @@ nav a.active::after {
       cursor: pointer;
     }
 
-     footer {
+    footer {
       background: #234221;
       color: #ccc;
       text-align: center;
       padding: 30px;
       font-size: 0.75rem;
+      margin-top: auto;
     }
   </style>
 </head>
@@ -211,76 +217,70 @@ nav a.active::after {
     </label>
   </header>
 
-  <section class="hero">
-    <h2>AI-Powered Plant Disease Detection</h2>
-    <p>Upload A Photo Of Your Plant, And Let Our Advanced AI Detect Any Diseases Or Issues It Might Have</p>
-  </section>
+  <main>
+    <section class="hero">
+      <h2>AI-Powered Plant Disease Detection</h2>
+      <p>Upload A Photo Of Your Plant, And Let Our Advanced AI Detect Any Diseases Or Issues It Might Have</p>
+    </section>
 
-  <section class="upload-card" id="uploadCard">
-    <img src="{{ url_for('static', filename='crop1.png')}}" alt="Wheat stalks">
-    <p>Drag and drop your image here</p>
-    <input type="file" id="fileInput" hidden accept="image/*">
-    <button id="uploadBtn">Upload an Image</button>
-    <div class="preview" id="preview"></div>
-  </section>
+    <section class="upload-card" id="uploadCard">
+      <p>Drag and drop your image here</p>
+      <input type="file" id="fileInput" hidden accept="image/*">
+      <button id="uploadBtn">Upload an Image</button>
+      <div class="preview" id="preview"></div>
+    </section>
+  </main>
 
-  <section class="cta">
-    <h3>Get Started<br>With Your First Diagnosis</h3>
-    <button>Create Account</button>
-  </section>
-
- <footer class="footer">
+  <footer class="footer">
     <div class="footer__in">
       © <span id="year"></span> 2025 Krishil. <br />All Rights Reserved.
     </div>
   </footer>
 
- <script>
-  const uploadCard = document.getElementById("uploadCard");
-  const fileInput = document.getElementById("fileInput");
-  const uploadBtn = document.getElementById("uploadBtn");
-  const preview = document.getElementById("preview");
+  <script>
+    const uploadCard = document.getElementById("uploadCard");
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const preview = document.getElementById("preview");
 
-  // Button click opens file chooser
-  uploadBtn.addEventListener("click", () => fileInput.click());
+    uploadBtn.addEventListener("click", () => fileInput.click());
 
-  // File selected
-  fileInput.addEventListener("change", () => {
-    if (fileInput.files.length > 0) {
-      displayImage(fileInput.files[0]);
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        displayImage(fileInput.files[0]);
+      }
+    });
+
+    uploadCard.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      uploadCard.classList.add("dragover");
+    });
+
+    uploadCard.addEventListener("dragleave", () => {
+      uploadCard.classList.remove("dragover");
+    });
+
+    uploadCard.addEventListener("drop", (e) => {
+      e.preventDefault();
+      uploadCard.classList.remove("dragover");
+      if (e.dataTransfer.files.length > 0) {
+        displayImage(e.dataTransfer.files[0]);
+      }
+    });
+
+    function displayImage(file) {
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
+      };
+      reader.readAsDataURL(file);
     }
-  });
 
-  // Drag and drop
-  uploadCard.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    uploadCard.classList.add("dragover");
-  });
-
-  uploadCard.addEventListener("dragleave", () => {
-    uploadCard.classList.remove("dragover");
-  });
-
-  uploadCard.addEventListener("drop", (e) => {
-    e.preventDefault();
-    uploadCard.classList.remove("dragover");
-    if (e.dataTransfer.files.length > 0) {
-      displayImage(e.dataTransfer.files[0]);
-    }
-  });
-
-  function displayImage(file) {
-    if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
-    };
-    reader.readAsDataURL(file);
-  }
-</script>
-
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

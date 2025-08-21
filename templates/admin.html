@@ -10,9 +10,9 @@
 
 <style>
 :root{
-  --green:#48CA72;
-  --green-dark:#2FA358;
-  --green-active:#3eb968;
+  --green:#234221;        /* updated */
+  --green-dark:#234221;   /* updated */
+  --green-active:#234221; /* updated */
   --text:#1f2937;
   --muted:#6b7280;
   --card:#ffffff;
@@ -86,7 +86,7 @@ body{
   padding:14px 22px;
   font-weight:700;
 }
-.nav a:hover{background:  #48CA72}
+.nav a:hover{background: var(--green)}
 .nav a.active{
   background:var(--green-active);
   box-shadow:inset 3px 0 0 rgba(255,255,255,.85);
@@ -158,8 +158,8 @@ body{
 <!-- Top Bar -->
 <div class="topbar">
   <div class="brand">
-    <img src="logo2.png" alt="GROW IT Logo">
-    GROW IT
+    
+    Krishil
   </div>
   <div class="settings">⚙</div>
 </div>
@@ -228,8 +228,8 @@ new Chart(ctx1, {
         labels: ['1','2','3','4','5','6','7','8','9'],
         datasets: [{
             data: [50,100,40,90,50,100,40,90,50],
-            borderColor: '#4CAF87',
-            backgroundColor: 'rgba(76, 175, 135, 0.2)',
+            borderColor: '#234221',
+            backgroundColor: 'rgba(35, 66, 33, 0.2)',
             fill: true
         }]
     },
@@ -243,7 +243,7 @@ new Chart(ctx2, {
         labels: ['1','2','3','4','5','6','7','8','9'],
         datasets: [{
             data: [70,60,80,50,90,60,80,70,100],
-            backgroundColor: '#4CAF87'
+            backgroundColor: '#234221'
         }]
     },
     options: { responsive: true, plugins: { legend: { display: false } } }
@@ -256,7 +256,7 @@ new Chart(ctx3, {
         labels: ['Success', 'Failure'],
         datasets: [{
             data: [85, 15],
-            backgroundColor: ['#48CA72', '#e5e7eb']
+            backgroundColor: ['#234221', '#e5e7eb']
         }]
     },
     options: { responsive: true }
@@ -269,8 +269,8 @@ new Chart(ctx4, {
         labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
         datasets: [{
             data: [10, 20, 15, 25, 22, 30, 28],
-            borderColor: '#48CA72',
-            backgroundColor: 'rgba(72, 202, 114, 0.2)',
+            borderColor: '#234221',
+            backgroundColor: 'rgba(35, 66, 33, 0.2)',
             fill: true
         }]
     },

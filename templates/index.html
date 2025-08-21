@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krishil — Plant Care & Diagnosis</title>
+  <title>Krishil - Plant care and diagnosis</title>
 
   <!-- Fonts -->
   <link
@@ -34,6 +34,22 @@
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
+
+       /* Hide Google top banner iframe */
+iframe.goog-te-banner-frame {
+    display: none !important;
+}
+
+/* Hide Google top banner container */
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+
+/* Reset body shift */
+body {
+    top: 0px !important;
+}
+
 
     :root {
       --maxw: 1200px;
@@ -73,6 +89,7 @@
       padding: 18px var(--padX);
       color: #fff;
     }
+
 
     .brand {
       display: inline-flex;
@@ -497,6 +514,24 @@
       <a href="#about">About Us</a>
     </div>
 
+    <!-- add this to your header -->
+<div id="google_translate_element"></div> 
+
+<!-- to your js part -->
+<script src="script.js"></script>
+      <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {pageLanguage: 'en'},
+                'google_translate_element'
+            );
+        }
+         
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  
+
     <label class="search" aria-label="Search">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
@@ -505,6 +540,7 @@
       <input type="search" placeholder="Search" />
     </label>
   </nav>
+  
 
   <!-- HERO -->
   <header id="top" class="hero" role="banner">
@@ -642,6 +678,29 @@
       });
     });
   </script>
+
+      <script>
+    function removeGoogleBar() {
+        // remove iframe if injected
+        var frame = document.querySelector("iframe.goog-te-banner-frame");
+        if (frame) {
+            frame.remove();
+        }
+
+        // remove banner div if injected
+        var banner = document.querySelector(".goog-te-banner-frame.skiptranslate");
+        if (banner) {
+            banner.remove();
+        }
+
+        // reset body margin shift
+        document.body.style.top = "0px";
+    }
+
+    // run repeatedly to catch late injections
+    setInterval(removeGoogleBar, 500);
+    </script>
+
 </body>
 
 </html>

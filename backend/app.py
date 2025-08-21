@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, render_template, request, redirect, url_for
+from flask import Flask, request, jsonify, render_template, request, redirect, url_for, g
+import json
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import tensorflow as tf
@@ -12,13 +13,23 @@ from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
 
+app = Flask(__name__)
+
+#------------------------------------------------------------------------------
+#Multilingual
+#------------------------------------------------------------------------------
+
+
+
+
+
 #------------------------------------------------------------------------------
 # Chat bot
 #------------------------------------------------------------------------------
 
 load_dotenv()
 
-app = Flask(__name__)
+
 CORS(app)
 
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
