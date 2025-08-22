@@ -228,6 +228,16 @@
       <input type="file" id="fileInput" hidden accept="image/*">
       <button id="uploadBtn">Upload an Image</button>
       <div class="preview" id="preview"></div>
+
+       <!-- Prediction Results Bar -->
+      <div class="prediction-bar" id="predictionBar" style="display: none;">
+      <h3>Prediction Result</h3>
+      <p><strong>Disease:</strong> <span id="predictedDisease"></span></p>
+      <p><strong>Confidence:</strong> <span id="predictionConfidence"></span></p>
+      <!-- <h4>Top 3 Predictions</h4>
+      <ul id="topPredictions"></ul> -->
+      </div>
+
     </section>
   </main>
 
@@ -238,49 +248,69 @@
   </footer>
 
   <script>
-    const uploadCard = document.getElementById("uploadCard");
-    const fileInput = document.getElementById("fileInput");
-    const uploadBtn = document.getElementById("uploadBtn");
-    const preview = document.getElementById("preview");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const fileInput = document.getElementById("fileInput");
+  const preview = document.getElementById("preview");
+  const predictionBar = document.getElementById("predictionBar");
+  const predictedDisease = document.getElementById("predictedDisease");
+  const predictionConfidence = document.getElementById("predictionConfidence");
+  // const topPredictions = document.getElementById("topPredictions");
 
-    uploadBtn.addEventListener("click", () => fileInput.click());
+  uploadBtn.addEventListener("click", () => {
+    fileInput.click();
+  });
 
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        displayImage(fileInput.files[0]);
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Show preview
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.style.maxWidth = "200px";
+    preview.innerHTML = "";
+    preview.appendChild(img);
+
+    // Reset prediction bar
+    predictionBar.style.display = "none";
+
+    // Send to backend
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch("/api/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        predictedDisease.textContent = result.prediction;
+        predictionConfidence.textContent = (result.confidence * 100).toFixed(2) + "%";
+
+        // // Show top 3 predictions
+        // topPredictions.innerHTML = "";
+        // result.top_3_predictions.forEach(p => {
+        //   const li = document.createElement("li");
+        //   li.textContent = `${p.disease} - ${(p.confidence * 100).toFixed(2)}%`;
+        //   topPredictions.appendChild(li);
+        // });
+
+        predictionBar.style.display = "block"; // show results
+      } else {
+        predictedDisease.textContent = "Error";
+        predictionConfidence.textContent = result.error;
+        predictionBar.style.display = "block";
       }
-    });
-
-    uploadCard.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      uploadCard.classList.add("dragover");
-    });
-
-    uploadCard.addEventListener("dragleave", () => {
-      uploadCard.classList.remove("dragover");
-    });
-
-    uploadCard.addEventListener("drop", (e) => {
-      e.preventDefault();
-      uploadCard.classList.remove("dragover");
-      if (e.dataTransfer.files.length > 0) {
-        displayImage(e.dataTransfer.files[0]);
-      }
-    });
-
-    function displayImage(file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Please upload an image file");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
-      };
-      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      predictedDisease.textContent = "Error";
+      predictionConfidence.textContent = "Something went wrong!";
+      predictionBar.style.display = "block";
     }
-
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  });
+</script>
 </body>
 </html>

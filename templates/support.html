@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support - Krishil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f5e0c7;
+      color: #1d2d20;
+      line-height: 1.6;
+    }
+
+    header {
+
+     background: linear-gradient(to bottom, #4c6b3c, #234221);
+      color: #fff;
+      padding: 20px 60px 60px; /* more bottom padding for title */
+      position: relative;
+    }
+
+    /* Top bar inside header */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-family: 'Playfair Display', serif;
+        position: absolute;
+  left: 60px;
+  margin: 0;
+
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  position: relative;
+  line-height: 1;   /* consistent */
+  display: flex;
+  align-items: center;
+  padding: 4px 0;   /* gives balanced spacing */
+}
+
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      margin: auto;
+      bottom: -6px;
+      width: 0;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+    /* Search bar */
+    /* .search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 999px;
+      padding: 0 12px;
+      min-width: 220px;
+      height: 34px;  /* thinner */
+      /* color: #fff; */
+      
+    /* }
+
+    .search input {
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: #fff;
+      width: 100%;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .search input::placeholder {
+      color: rgba(255,255,255,.9);
+    }
+
+    .search .icon {
+      width: 14px;
+      height: 14px;
+      opacity: .9;
+      stroke: #fff;
+      flex-shrink: 0;
+    } */ 
+
+    /* Hero text */
+    .hero-text {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .hero-text h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Content */
+    .content {
+      background: #f5e0c7;
+      padding: 60px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .content h3 {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .content p {
+      font-size: 16px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;   /* more gap between FAQ & Contact */
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #ccc;
+      padding: 0.75rem 0;
+      cursor: pointer;
+    }
+
+    .faq-question {
+      font-weight: 600;
+      position: relative;
+      padding-right: 20px;
+    }
+
+    .faq-question::after {
+      content: "+";
+      position: absolute;
+      right: 0;
+      top: 0;
+      font-size: 1.2rem;
+    }
+
+    .faq-item.active .faq-question::after {
+      content: "–";
+    }
+
+    .faq-answer {
+      display: none;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    .contact-support {
+      padding-left: 5rem; /* shifted more right */
+    }
+
+    .contact-support p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .contact-support span {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+
+    /* Card Form */
+    .card {
+      background: #f9f4e7;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: 3rem auto;
+      box-sizing: border-box;
+    }
+
+    .card form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card input,
+    .card textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .card textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .card button {
+      width: 100%;
+      padding: 0.85rem;
+      background: #234221;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.3s ease;
+    }
+
+    .card button:hover {
+      background: #1b341b;
+    }
+
+    footer {
+      background: #234221;
+      color: #ccc;
+      text-align: center;
+      padding: 30px;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-support {
+        padding-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="topbar">
+      <h1>Krishil</h1>
+      <nav>
+        <a href="{{ url_for('home')}}">Home</a>
+        <a href="{{ url_for('support_page')}}" class="active">Support</a>
+        <a href="{{ url_for('about_us')}}">About</a>
+      </nav>
+      <!-- <label class="search" aria-label="Search">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+          <path d="M20 20L17 17" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+        <input type="search" placeholder="Search" />
+      </label> -->
+    </div>
+    <div class="hero-text">
+      <h2>Support</h2>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <section class="content">
+    <p>Welcome to our Support Center! Here you’ll find answers to common questions and ways to reach us if you need extra help.</p>
+
+    <div class="grid">
+      <!-- FAQs -->
+      <div class="faq">
+        <h2>FAQs</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">How do I use Krishil to detect plant diseases?</div>
+          <div class="faq-answer">Simply upload a clear photo of your plant leaf, and our AI will analyze it to detect any possible diseases. Within seconds, you’ll get results along with treatment suggestions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Is Krishil free to use?</div>
+          <div class="faq-answer">Yes, Krishil is completely free for basic disease detection. Premium features like detailed reports and crop health tracking may be added in the future.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Which plants are supported?</div>
+          <div class="faq-answer">Currently, Krishil focuses on common crops like rice, wheat, maize, cotton, and several fruits and vegetables. We are continuously adding more plant types to our database.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">Do I need to create an account to use Krishil?</div>
+          <div class="faq-answer">No account is required for quick detection, but signing up allows you to save results, track plant health, and access more features.</div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="contact-support">
+        <h3>Contact Support</h3>
+        <p><span>📧</span> supportkrishil@gmail.com</p>
+        <p><span>📞</span> +918290746061</p>
+        
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="card">
+      <h3>Get in Touch</h3>
+      <form>
+        <input type="text" placeholder="Name" required>
+        <input type="email" placeholder="Email" required>
+        <textarea placeholder="Message" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Krishil — All Rights Reserved</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.addEventListener('click', () => {
+        item.classList.toggle('active');
+      });
+    });
+  </script>
+</body>
+</html>

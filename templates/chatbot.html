@@ -1,30 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Standalone Chatbot</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatbot</title>
   <style>
-    body { font-family: sans-serif; background: #f5f7ff; margin:0; padding:20px; }
-    .chat { max-width: 700px; margin:auto; display:flex; flex-direction:column; gap:10px; }
-    .msg { padding:10px; border-radius:8px; white-space:pre-wrap; }
-    .user { background:#d0e4ff; align-self:flex-end; }
-    .assistant { background:#e4ffd9; align-self:flex-start; }
-    .sys { background:#eee; font-style:italic; }
-    textarea { width:100%; min-height:60px; }
+    :root {
+      --bg:#0f0f0f;
+      --panel:#efe3cc;
+      --bubble-bot:#27452e;
+      --bubble-user:#bcd8c1;
+      --bar:#a08256;
+      --input:white;
+      --send:#725328;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; }
+    body {
+      background: var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .frame {
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+      background: var(--panel);
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+
+    .scroll {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .msg {
+      max-width: 72%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      margin: 10px 0;
+      line-height: 1.3;
+      font-weight: 500;
+      word-wrap: break-word;
+    }
+    .left {
+      margin-right: auto;
+      background: var(--bubble-bot);
+      color: #e6f0e8;
+      border-top-left-radius: 8px;
+    }
+    .right {
+      margin-left: auto;
+      background: var(--bubble-user);
+      color: #27452e;
+      border-top-right-radius: 8px;
+    }
+
+    .bar {
+      background: var(--bar);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .inputWrap {
+      background: var(--input);
+      flex: 1;
+      height: 40px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      outline: 2px solid rgba(0,0,0,.07);
+    }
+    .inputWrap input {
+      flex: 1;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 15px;
+      color: #27452e;
+    }
+    .sendBtn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--send);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      border: none;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.1), 0 4px 12px rgba(0,0,0,.25);
+    }
+    .sendBtn svg { transform: translateX(1px); }
+
+    .scroll::-webkit-scrollbar { width: 8px; }
+    .scroll::-webkit-scrollbar-thumb { background:#cbb89b; border-radius: 10px; }
   </style>
 </head>
 <body>
-  <div class="chat" id="chat"></div>
-  <div style="max-width:700px;margin:auto;margin-top:10px;">
-    <select id="provider">
-      <option value="openai">OpenAI (GPT)</option>
-      <option value="gemini">Google Gemini</option>
-    </select>
-    <input id="model" placeholder="auto" />
-    <br><br>
-    <textarea id="input" placeholder="Ask me anything..."></textarea><br>
-    <button onclick="sendMessage()">Send</button>
+  <div class="frame" role="application" aria-label="Chat window">
+    <div class="scroll" id="messages">
+      <!-- Default bot greeting -->
+     
+    </div>
+
+    <div class="bar">
+      <div class="inputWrap">
+        <input id="input" type="text" placeholder="Type your message..." autocomplete="off" />
+      </div>
+      <button class="sendBtn" id="sendBtn" aria-label="send message">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 2 11 13" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 2 15 22l-4-9-9-4 20-7Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
+  <!-- ✅ Link to chatbot.js -->
   <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 </body>
 </html>

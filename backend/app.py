@@ -12,6 +12,8 @@ import json as pyjson
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
+import google.generativeai as genai
+import sqlite3
 
 app = Flask(__name__)
 
@@ -32,35 +34,32 @@ load_dotenv()
 
 CORS(app)
 
-DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 DEFAULT_GEMINI_MODEL = "gemini-1.5-flash"
-SYSTEM_PROMPT = "You are a helpful assistant. Answer clearly and concisely."
+SYSTEM_PROMPT = """
+You are a helpful website assistant.
+Answer user questions clearly and concisely.
 
-# ---------- LLM Connectors ----------
-def call_openai(messages, model=None):
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY not set")
+Do not include navigation commands like NAVIGATE: — 
+page navigation will be handled by the system.
+"""
 
-    from openai import OpenAI
-    client = OpenAI(api_key=api_key)
 
-    resp = client.chat.completions.create(
-        model=model or DEFAULT_OPENAI_MODEL,
-        messages=messages,
-        temperature=0.7,
-    )
-    return resp.choices[0].message.content.strip()
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# ---------- Chatbot Logic ----------
+
+NAV_KEYWORDS = {
+    "support": "/support",
+    "about": "/about_us",
+    "home": "/",
+    "detect": "/detect",
+    "workspace": "/workspace",
+    "services": "/services",
+    "contact": "/contact",
+}
 
 
 def call_gemini(messages, model=None):
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY not set")
-
-    import google.generativeai as genai
-    genai.configure(api_key=api_key)
-
     compiled = []
     for m in messages:
         prefix = (
@@ -74,6 +73,30 @@ def call_gemini(messages, model=None):
     model_obj = genai.GenerativeModel(model or DEFAULT_GEMINI_MODEL)
     resp = model_obj.generate_content("\n\n".join(compiled))
     return getattr(resp, "text", "")
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    user_msg = data.get("message", "").lower().strip()
+
+    # 1. Direct keyword match (support, about, etc.)
+    for keyword, route in NAV_KEYWORDS.items():
+        if keyword in user_msg or user_msg == f"/{keyword}":
+            return jsonify({
+                "reply": f"The {keyword.capitalize()} page contains relevant information. Navigating...",
+                "navigate": route
+            })
+
+    # 2. If no keyword found → fallback to LLM
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_msg}
+    ]
+    reply = call_gemini(messages)
+
+    return jsonify({"reply": reply, "navigate": None})
+
 
 
 # ------------------------------------------------------------------------------
@@ -104,6 +127,7 @@ class Upload(db.Model):
     confidence = db.Column(db.Float, nullable=False)
     top_3_predictions = db.Column(db.Text, nullable=False)  # Stored as JSON string
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -220,6 +244,28 @@ def preprocess_image(image_bytes):
 # ------------------------------------------------------------------------------
 # API routes
 # ------------------------------------------------------------------------------
+def get_last_uploads(limit=10):
+    conn = sqlite3.connect("plant_disease.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT image_path, disease, confidence, timestamp
+        FROM uploads
+        ORDER BY timestamp DESC
+        LIMIT ?
+    """, (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [
+        {
+            "image_url": f"/static/uploads/{row[0]}",
+            "disease": row[1],
+            "confidence": f"{row[2]:.2f}%",
+            "date": row[3].split(" ")[0],   # e.g. 2025-08-23
+            "time": row[3].split(" ")[1]    # e.g. 10:32
+        }
+        for row in rows
+    ]
+
 @app.route("/api/predict", methods=["POST"])
 def predict():
     if "image" not in request.files:
@@ -255,6 +301,32 @@ def predict():
             for idx in top_3_indices
         ]
 
+        # -------------------------------
+        # Save uploaded image to static/uploads
+        # -------------------------------
+        UPLOAD_FOLDER = os.path.join(app.static_folder, "uploads")
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        save_path = os.path.join(UPLOAD_FOLDER, image_file.filename)
+
+        # Reset file pointer and save
+        image_file.stream.seek(0)
+        image_file.save(save_path)
+
+        # -------------------------------
+        # Store prediction in the database
+        # -------------------------------
+        upload_record = Upload(
+            filename=image_file.filename,
+            predicted_class=predicted_class,
+            confidence=confidence,
+            top_3_predictions=pyjson.dumps(top_3_predictions),
+        )
+        db.session.add(upload_record)
+        db.session.commit()
+
+        # -------------------------------
+        # Response
+        # -------------------------------
         model_performance = {
             "validation_accuracy": (model_metrics or {}).get("val_accuracy"),
             "training_accuracy": (model_metrics or {}).get("accuracy"),
@@ -262,25 +334,10 @@ def predict():
             "training_loss": (model_metrics or {}).get("loss"),
         }
 
-        # Store prediction in the database
-        try:
-            upload_record = Upload(
-                filename=image_file.filename,
-                predicted_class=predicted_class,
-                confidence=confidence,
-                top_3_predictions=pyjson.dumps(top_3_predictions),
-            )
-            db.session.add(upload_record)
-            db.session.commit()
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            print(f"Database error: {e}")
-
         return jsonify(
             {
                 "prediction": predicted_class,
                 "confidence": confidence,
-                "top_3_predictions": top_3_predictions,
                 "model_metrics": model_performance,
                 "success": True,
             }
@@ -289,24 +346,33 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e), "success": False}), 500
 
-@app.route("/api/uploads", methods=["GET"])
-def get_uploads():
+
+
+@app.route("/workspace")
+def workspace_page():
     try:
-        uploads = Upload.query.order_by(Upload.timestamp.desc()).limit(10).all()
-        return jsonify(
-            [
-                {
-                    "filename": u.filename,
-                    "predicted_class": u.predicted_class,
-                    "confidence": float(u.confidence),
-                    "top_3_predictions": pyjson.loads(u.top_3_predictions),
-                    "timestamp": u.timestamp.isoformat(),
-                }
-                for u in uploads
-            ]
-        )
+        # Fetch latest 20 predictions
+        uploads = Upload.query.order_by(Upload.timestamp.desc()).limit(20).all()
+
+        # Group by date
+        crops_by_date = {}
+        for u in uploads:
+            date_str = u.timestamp.strftime("%d %B %Y")  # e.g. "23 August 2025"
+            if date_str not in crops_by_date:
+                crops_by_date[date_str] = []
+            crops_by_date[date_str].append({
+                "name": u.predicted_class,
+                "type": "Detected Plant",
+                "status": f"Confidence: {u.confidence*100:.1f}%",
+                "progress": "Analyzed",
+                "image": f"uploads/{u.filename}"  # will be resolved as /static/uploads/...
+            })
+
+        return render_template("workspace.html", crops=crops_by_date)
+
     except Exception as e:
-        return jsonify({"error": str(e), "success": False}), 500
+        print("Error loading workspace:", e)
+        return render_template("workspace.html", crops={})
 
 @app.route("/api/model-info", methods=["GET"])
 def get_model_info():
@@ -385,11 +451,29 @@ def admin_page():
 
 @app.route("/workspace")
 def workspace():
-    return render_template("workspace.html")
+    try:
+        # Fetch latest 20 predictions from DB
+        uploads = Upload.query.order_by(Upload.timestamp.desc()).limit(20).all()
 
-@app.route("/database")
-def database():
-    return render_template("database.html")
+        # Group by date
+        crops_by_date = {}
+        for u in uploads:
+            date_str = u.timestamp.strftime("%d %B %Y")  # e.g. "23 August 2025"
+            if date_str not in crops_by_date:
+                crops_by_date[date_str] = []
+            crops_by_date[date_str].append({
+                "name": u.predicted_class,
+                "type": "Detected Plant",
+                "status": f"Confidence: {u.confidence*100:.1f}%",
+                "progress": "Analyzed",
+                "image": f"uploads/{u.filename}"
+            })
+
+        return render_template("workspace.html", crops=crops_by_date)
+
+    except Exception as e:
+        print("Error loading workspace:", e)
+        return render_template("workspace.html", crops={})
 
 @app.route("/user")
 def user_page():
@@ -398,6 +482,14 @@ def user_page():
 @app.route("/contact")
 def contact_page():
     return render_template("contact.html")
+
+@app.route("/support")
+def support_page():
+    return render_template("support.html")
+
+@app.route("/about")
+def about_us():
+    return render_template("about.html")
 
 @app.route("/chatbot")
 def chatbot():

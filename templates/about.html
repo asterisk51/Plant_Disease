@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us — Krishil</title>
+
+  <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      
+      background: #f5e0c7;
+      color: #1d2d20;
+      line-height: 1.6;
+    }
+
+    /* Unified Header */
+    header {
+
+     background: linear-gradient(to bottom, #4c6b3c, #234221);
+      color: #fff;
+      padding: 20px 60px 60px; /* more bottom padding for title */
+      position: relative;
+    }
+
+    /* Top bar inside header */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-family: 'Playfair Display', serif;
+        position: absolute;
+  left: 60px;
+  margin: 0;
+
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      margin: auto;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+/* Search
+    .search {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 999px;
+      padding: 6px 14px;
+      min-width: 160px;
+      color: #fff;
+    }
+    .search input {
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: #fff;
+      width: 100%;
+      font-size: 14px;
+    }
+    .search input::placeholder {
+      color: rgba(255,255,255,.9);
+    }
+    .search .icon {
+      width: 14px;
+      height: 14px;
+      opacity: .9;
+      stroke: #fff;
+    } */
+
+
+    /* Title inside header */
+    .hero-text {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .hero-text h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Content Section */
+    .content {
+      background: #f5e0c7;
+      padding: 60px 20px;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .content h3 {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .content p {
+      font-size: 16px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    /* Quote */
+    .quote {
+      font-style: italic;
+      margin: 60px auto;
+      max-width: 700px;
+      border-top: 1px solid #8d7758;
+      border-bottom: 1px solid #8d7758;
+      padding: 20px;
+    }
+
+    /* Footer */
+    footer {
+      background: #234221;
+      color: #ccc;
+      text-align: center;
+      padding: 30px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Unified Header -->
+  <header>
+    <div class="topbar">
+      <h1>Krishil</h1>
+      <nav>
+        <a href="{{ url_for('home')}}" class="active">Home</a>
+        <a href="{{ url_for('support_page')}}">Support</a>
+        <a href="{{ url_for('about_us')}}">About Us</a>
+      </nav>
+      <!-- <label class="search" aria-label="Search">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+        <path d="M20 20L17 17" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      <input type="search" placeholder="Search" />
+    </label> -->
+    </div>
+    <div class="hero-text">
+      <h2>About Us</h2>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <section class="content">
+    <h3>Welcome To Krishil !</h3>
+    <p>
+      At Krishil, We Believe That Healthier Plants Lead To A Healthier Planet. Our Mission Is
+      Simple: To Empower Farmers, Gardeners, And Plant Lovers With Smart Tools That Make Plant
+      Care Easier, Faster, And More Effective. <br><br>
+      Using AI-Powered Disease Detection And A Personalized Plant Health Workspace, Krishil Helps
+      You Identify Plant Problems Early, Track Treatments, And Keep Your Greens Thriving.
+    </p>
+
+    <h3>How It Works?</h3>
+    <p>
+      Krishil works by allowing users to upload images of their crops, which are then analyzed
+      using an AI-powered model trained on plant disease datasets. The system quickly identifies
+      whether the plant is healthy or infected, provides the name of the disease, and suggests
+      suitable treatments and preventive measures. This helps farmers and gardeners detect
+      problems early, reduce crop loss, and maintain healthier plants.
+    </p>
+
+    <div class="quote">
+      “Our Motive Is To Provide Farmers And Plant Enthusiasts With An Efficient Tool To Detect
+      Plant Diseases Early, Reduce Crop Loss, And Promote Sustainable Agriculture.”
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Krishil. All Rights Reserved.
+  </footer>
+</body>
+</html>

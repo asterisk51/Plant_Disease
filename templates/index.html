@@ -29,7 +29,7 @@
     body {
       margin: 0;
       color: #1d2a24;
-      background: #fff;
+      background: #ECD4B0;
       font-family: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
@@ -66,7 +66,7 @@ body {
       --muted: #51645c;
       --line: #1c352b;
 
-      --btn: #2e7d59;
+      --btn: #3B5530;
       --btn-hover: #2a6e4f;
 
       --radius-pill: 9999px;
@@ -193,7 +193,7 @@ body {
       max-width: var(--maxw);
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1.05fr .95fr;
+      grid-template-columns: 1fr 1fr;
       gap: clamp(20px, 4vw, 48px);
       padding: 120px var(--padX) 0;
       padding-right: 40%;
@@ -291,133 +291,117 @@ body {
     /* =========================
    FEATURES (CARDS)
 ========================= */
-    .section {
-      background: #fff;
-    }
+  .section {
+    background: #ECD4B0; /* matches page bg */
+  }
 
-    .section__in {
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 60px var(--padX) 40px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 40px;
-      justify-items: start;
-    }
+  .section__in {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 60px var(--padX) 40px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    justify-items: start;
+  }
 
-    .section__in>.card {
-      justify-self: start;
-    }
+  .section__in>.card {
+    justify-self: start;
+  }
 
-    .section__in>.card:nth-child(even) {
-      justify-self: end;
-    }
+  .section__in>.card:nth-child(even) {
+    justify-self: end;
+  }
 
-    .card {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      /* fixed image + flexible text */
-      gap: 28px;
-      align-items: stretch;
-      /* make both columns equal height */
-      border: 2px solid var(--line);
-      border-radius: 999px;
-      padding: 20px 24px;
-      width: min(800px, 100%);
-      background: #fff;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      overflow: hidden;
-      /* keeps layout tidy */
-      min-height: 280px;
-      /* optional: force equal card height */
-    }
+  .card {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 28px;
+    align-items: stretch;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    padding: 20px 24px;
+    width: min(800px, 100%);
+    background: rgba(255, 255, 255, 0.0); /* transparent */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    min-height: 280px;
+  }
 
-    /* Right-side card keeps same structure but reversed */
-    .card--right {
-      grid-template-columns: 1fr 220px;
-      gap: 70px;
-      /* increase spacing only for right-side cards */
-    }
+  .card--right {
+    grid-template-columns: 1fr 220px;
+    gap: 70px;
+  }
 
-    .card__img {
-      display: block;
-      /* no flex centering */
-      border-radius: 50px;
-      /* keep rounded corners */
-      overflow: hidden;
-      /* crop nicely */
-    }
+  .card__img {
+    display: block;
+    border-radius: 50px;
+    overflow: hidden;
+  }
 
-    .card__img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      /* makes image cover whole box */
-      border-radius: 20px;
-      /* match parent rounding */
-      max-width: none;
-      /* remove size restriction */
-      max-height: none;
-      transform: none;
-      /* no shift/scale */
-    }
+  .card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
 
-    .card__body {
-      padding: 19px 24px;
-      /* increase left/right padding */
-      max-width: 520px;
-    }
+  .card__body {
+    padding: 19px 24px;
+    max-width: 520px;
+    display: flex;                /* new */
+    flex-direction: column;       /* stack title, copy, button */
+    align-items: center;          /* center all content */
+    text-align: center;           /* ensure text also centered */
+  }
 
-    .card__title {
-      font-family: "Playfair Display", Georgia, serif;
-      font-weight: 700;
-      font-size: 22px;
-      margin: 0 0 10px;
-      color: #1e2d26;
-      text-align: center;
-    }
+  .card__title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0 0 10px;
+    color: #1e2d26;
+    text-align: center;
+  }
 
-    .card__copy {
-      color: #263a31;
-      font-size: 14px;
-      line-height: 1.55;
-      max-width: 56ch;
-      text-align: center;
-    }
+  .card__copy {
+    color: #263a31;
+    font-size: 14px;
+    line-height: 1.55;
+    max-width: 56ch;
+    text-align: center;
+  }
 
-    .card:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    }
-    .cta {
-  margin: 12px auto 0;
-  display: inline-flex;
-  align-items: center;   /* fixed missing value */
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: #e9f2ec;
-  color: #163a2b;
-  font-weight: 700;
-  font-size: 13px;
-  transition: all 0.3s ease;
+  .card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
 
-  margin-left: 130px;   /* pushes it a bit to the right */
-}
+  .cta {
+    margin: 16px 0 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: #3B5530;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 13px;
+    transition: all 0.3s ease;
+  }
 
+  .cta:hover {
+    filter: brightness(1.05);
+    transform: scale(1.05);
+  }
 
-
-.cta:hover {
-  filter: brightness(1.05);
-  transform: scale(1.05);
-}
-
-    .chev {
-      width: 14px;
-      height: 14px;
-    }
+  .chev {
+    width: 14px;
+    height: 14px;
+  }
 
     .reveal {
       opacity: 0;
@@ -473,9 +457,11 @@ body {
         margin-top: 20px;
       }
 
+      @media (max-width: 980px) {
       .section__in {
         justify-items: center;
       }
+    
 
       .section__in>.card,
       .section__in>.card:nth-child(even) {
@@ -488,6 +474,7 @@ body {
         text-align: center;
         border-radius: 20px;
         width: 100%;
+        background: rgba(255, 255, 255, 0.0);
       }
 
       .card__img {
@@ -496,6 +483,9 @@ body {
         min-height: 160px;
       }
     }
+  }
+
+    
   </style>
 
 </head>
@@ -510,25 +500,25 @@ body {
 
     <div class="navlinks">
       <a href="#top" class="active">Home</a>
-      <a href="#support">Support</a>
-      <a href="#about">About Us</a>
+      <a href="{{ url_for('support_page') }}">Support</a>
+      <a href="{{ url_for('about_us')}}">About Us</a>
     </div>
 
-    <!-- add this to your header -->
+    <!-- add this to your header
 <div id="google_translate_element"></div> 
 
-<!-- to your js part -->
-<script src="script.js"></script>
+to your js part -->
+<!-- <script src="script.js"></script>
       <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement(
                 {pageLanguage: 'en'},
                 'google_translate_element'
             );
-        }
+        } -->
          
-  </script>
-  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <!-- </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
 
   
 
@@ -621,7 +611,7 @@ body {
             Manage your plant’s health records in one place — track detected diseases, monitor
             treatments, and add notes for better care.
           </p>
-          <button class="cta" onclick="window.location.href=`{{ url_for('database') }}`">
+          <button class="cta" onclick="window.location.href=`{{ url_for('workspace') }}`">
             Start Tracking
             <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M5 12h14" stroke-width="2" stroke-linecap="round" />

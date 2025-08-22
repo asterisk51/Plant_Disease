@@ -1,155 +1,364 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grow It - My Workspace</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Workspace - Krishil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background-color: white;
+      font-family: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background-color: #f1f1ec;
+      color: #000;
+      overflow-x: hidden;
     }
+
     header {
-        background-color: #4CAF50;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
+      background: linear-gradient(to bottom, #4c6b3c, #234221);
+      color: white;
+      padding: 2rem 4rem;
+      transition: all 0.3s ease-in-out;
+      position: relative;
     }
-    header img {
-        width: 24px;
-        height: 24px;
-        margin-right: 10px;
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
     }
-    .workspace-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin: 20px;
+
+    .nav h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
     }
-    .tabs {
-        margin: 0 20px;
-        font-size: 14px;
+
+    .nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
     }
-    .tabs label {
-        margin-right: 15px;
-        cursor: pointer;
+
+    .nav ul li {
+      font-size: 0.9rem;
+      position: relative;
     }
-    .tabs input {
-        margin-right: 5px;
+
+    .nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      opacity: .9;
+      font-weight: 600;
+      font-size: 14px;
+      padding-block: 6px;
+      position: relative;
+      transition: color 0.3s ease;
     }
-    .new-btn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        float: right;
-        margin-right: 20px;
-        cursor: pointer;
+
+    .nav ul li a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 2px;
+      width: 0;
+      margin: auto;
+      background: #fff;
+      border-radius: 2px;
+      transition: width 0.3s ease;
     }
-    table {
-        width: calc(100% - 40px);
-        border-collapse: collapse;
-        margin: 10px 20px;
-        font-size: 14px;
+
+    .nav ul li a:hover::after,
+    .nav ul li a.active::after {
+      width: 100%;
     }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-        text-align: left;
+
+    .search {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(255, 255, 255, .6);
+      border-radius: 999px;
+      padding: 8px 14px;
+      min-width: 220px;
+      color: #fff;
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
     }
-    th {
-        font-weight: normal;
+
+    .search input {
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: #fff;
+      width: 100%;
+      font-size: 14px;
     }
-    .date-label {
-        background-color: black;
-        color: white;
-        display: inline-block;
-        padding: 3px 8px;
-        font-size: 12px;
-        border-radius: 3px;
-        margin: 10px 20px 0;
+
+    .search input::placeholder {
+      color: rgba(255, 255, 255, .9);
     }
-    .fa {
-        margin-right: 5px;
+
+    .search .icon {
+      width: 14px;
+      height: 14px;
+      opacity: .9;
     }
-    .checkbox {
-        text-align: center;
+
+    /* prediction dropdown */
+    .predict-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      color: #000;
+      border-radius: 8px;
+      margin-top: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      display: none;
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
     }
-</style>
+
+    .predict-box div {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .predict-box div:hover {
+      background: #f0f0f0;
+    }
+
+    .hero {
+      margin-top: 1rem;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeInUp 1s ease forwards;
+      text-align: left;
+    }
+
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      margin-top: 0.5rem;
+      transition: all 0.3s ease-in-out;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .workspace {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .date-tag {
+      background-color: #4c6b3c;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.8rem;
+      margin: 1rem auto;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      justify-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background-color: #f2d9b4;
+      border: 4px solid black;
+      padding: 1rem;
+      width: 280px;
+      height: 400px;
+      box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.3);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card .image {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border-radius: 6px;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card .image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card .edit-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      background: #fff;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .card .title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+    }
+
+    .card .sub-title {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+
+    .card .footer {
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #000;
+      padding-top: 0.5rem;
+      margin-top: auto;
+    }
+
+    footer {
+      background: #234221;
+      color: #ccc;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.75rem;
+    }
+  </style>
 </head>
+
 <body>
+  <header>
+    <div class="nav">
+      <h1>Krishil</h1>
+      <ul>
+        <li><a href="{{ url_for('home')}}" class="active">Home</a></li>
+        <li><a href="#">Support</a></li>
+        <li><a href="#">About Us</a></li>
+      </ul>
+      <div class="search" aria-label="Search">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+          <path d="M20 20L17 17" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+        <input type="search" id="searchInput" placeholder="Search" />
+        <div class="predict-box" id="predictBox"></div>
+      </div>
+    </div>
+    <div class="hero">
+      <h2>My Workspace</h2>
+      <p>Your Plants At A Glance</p>
+    </div>
+  </header>
 
-<header>
-    <img src="{{ url_for('static', filename='logo2.png')}}" alt="Logo"> GROW IT
-</header>
+  <main class="workspace">
+  {% if crops %}
+    {% for date, plants in crops.items() %}
+      <div class="date-tag">{{ date }}</div>
+      <div class="grid">
+        {% for plant in plants %}
+          <div class="card">
+            <div class="image">
+              <img src="{{ url_for('static', filename=plant.image) }}" alt="{{ plant.name }}">
+            </div>
+            <div class="title">{{ plant.name }}</div>
+            <div class="sub-title">🌱 {{ plant.type }}</div>
+            <div class="footer">
+              <div>ⓘ {{ plant.status }}</div>
+              <div>✔ {{ plant.progress }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="text-align:center; margin-top:2rem; color:#555;">
+      No plant predictions yet. Upload an image in <b>Detect</b> page first.
+    </p>
+  {% endif %}
+</main>
 
-<div class="workspace-title">My Workspace</div>
 
-<div class="tabs">
-    <label><input type="radio" name="tab" checked> Today</label>
-    <label><input type="radio" name="tab"> Archived</label>
-    <label><input type="radio" name="tab"> All</label>
-    <span class="new-btn">NEW</span>
-</div>
+  <footer>
+    &copy; 2025 Krishil.<br />All Rights Reserved.
+  </footer>
 
-<div>
-    <div class="date-label">12 August</div>
-    <table>
-        <tr>
-            <th><i class="fa-solid fa-font"></i> Name</th>
-            <th><i class="fa-solid fa-seedling"></i> Category</th>
-            <th><i class="fa-solid fa-calendar-days"></i> Date-Time</th>
-            <th><i class="fa-solid fa-virus"></i> Disease</th>
-            <th><i class="fa-solid fa-notes-medical"></i> Treatment</th>
-            <th><i class="fa-solid fa-file-lines"></i> Notes</th>
-            <th></th>
-        </tr>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-        </tr>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-        </tr>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-        </tr>
-    </table>
-</div>
+  <script>
+    const plants = ["Soybean", "Tomato", "Potato", "Cabbage", "Onion", "Carrot", "Corn", "Wheat", "Rice", "Barley"];
+    const input = document.getElementById("searchInput");
+    const predictBox = document.getElementById("predictBox");
 
-<div>
-    <div class="date-label">13 August</div>
-    <table>
-        <tr>
-            <th><i class="fa-solid fa-font"></i> Name</th>
-            <th><i class="fa-solid fa-seedling"></i> Category</th>
-            <th><i class="fa-solid fa-calendar-days"></i> Date-Time</th>
-            <th><i class="fa-solid fa-virus"></i> Disease</th>
-            <th><i class="fa-solid fa-notes-medical"></i> Treatment</th>
-            <th><i class="fa-solid fa-file-lines"></i> Notes</th>
-            <th></th>
-        </tr>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-        </tr>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-        </tr>
-        <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-        </tr>
-    </table>
-</div>
+    input.addEventListener("input", () => {
+      const query = input.value.toLowerCase();
+      predictBox.innerHTML = "";
+      if (query) {
+        const matches = plants.filter(p => p.toLowerCase().includes(query));
+        if (matches.length > 0) {
+          matches.forEach(m => {
+            const div = document.createElement("div");
+            div.textContent = m;
+            div.addEventListener("click", () => {
+              input.value = m;
+              predictBox.style.display = "none";
+            });
+            predictBox.appendChild(div);
+          });
+          predictBox.style.display = "block";
+        } else {
+          predictBox.style.display = "none";
+        }
+      } else {
+        predictBox.style.display = "none";
+      }
+    });
 
+    // hide box on outside click
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search")) {
+        predictBox.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
