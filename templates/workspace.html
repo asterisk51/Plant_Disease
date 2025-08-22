@@ -15,7 +15,7 @@
 
     body {
       font-family: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background-color: #f1f1ec;
+      background-color: #ECD4B0;
       color: #000;
       overflow-x: hidden;
     }
@@ -238,9 +238,19 @@
     }
 
     .card .title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-bottom: 0.2rem;
+        font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  text-align: center;
+
+  display: -webkit-box;          /* Required for WebKit */
+  -webkit-line-clamp: 2;         /* WebKit-specific */
+  -webkit-box-orient: vertical;  /* WebKit-specific */
+
+  line-clamp: 2;                 /* Standard property */
+  box-orient: vertical;          /* Standard property */
+
+  overflow: hidden;
     }
 
     .card .sub-title {
@@ -274,8 +284,8 @@
       <h1>Krishil</h1>
       <ul>
         <li><a href="{{ url_for('home')}}" class="active">Home</a></li>
-        <li><a href="#">Support</a></li>
-        <li><a href="#">About Us</a></li>
+        <li><a href="{{ url_for('support_page')}}">Support</a></li>
+        <li><a href="{{ url_for('about_us')}}">About Us</a></li>
       </ul>
       <div class="search" aria-label="Search">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
