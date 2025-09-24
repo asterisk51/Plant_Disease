@@ -130,6 +130,6 @@
   </div>
 
   <!-- ✅ Link to chatbot.js -->
-  <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+  <script src="{{ request.url_for('static', path='chatbot.js') }}"></script>
 </body>
 </html>

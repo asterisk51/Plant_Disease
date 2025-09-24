@@ -186,7 +186,7 @@ body {
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: url("{{ url_for('static', filename='background 3.png') }}") center center/cover no-repeat;
+      background: url("{{ request.url_for('static', path='background 3.png') }}") center center/cover no-repeat;
     }
 
     .hero__in {
@@ -484,6 +484,27 @@ body {
       }
     }
   }
+  #google_translate_element {position:relative}
+
+#google_translate_element span {display: none!important; }
+
+#google_translate_element:after {
+content: "";
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#120a33;
+  position: absolute;
+  z-index: 1;
+  height: 40%;
+}
+
+#google_translate_element select {
+padding: 10px;
+
+}
+
+.goog-te-banner-frame.skiptranslate {display: none!important; visibility: hidden!important;}
 
     
   </style>
@@ -492,50 +513,44 @@ body {
 
 <body>
 
-  <!-- NAV -->
-  <nav class="nav" aria-label="Primary">
-    <a class="brand" href="#">
-      Krishil
+<!-- NAV -->
+<nav class="nav" aria-label="Primary">
+  <a class="brand translatable" href="#">Krishil</a>
+
+  <div class="navlinks">
+    <a href="#top" class="active translatable">Home</a>
+    <a href="{{ request.url_for('support_page') }}" class="translatable">Support</a>
+    <a href="{{ request.url_for('about_us')}}" class="translatable">About Us</a>
+  </div>
+
+  <!-- Search + Login container -->
+  <div style="display: flex; align-items: center; gap: 6px; justify-self: end;">
+    <!-- Search bar -->
+    <form class="search translatable" action="{{ request.url_for('search') }}" method="GET" style="display: flex; align-items: center; flex: none; width: 180px;">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+    <path d="M20 20L17 17" stroke-width="2" stroke-linecap="round"></path>
+  </svg>
+  <input type="search" name="q" placeholder="Search" style="width: 100%;" required />
+  <button type="submit" style="display: none;"></button> <!-- optional, Enter key works -->
+</form>
+
+
+
+    <!-- Small Login button -->
+    <a href="{{ request.url_for('login') }}" 
+       style="padding: 6px 12px; border-radius: var(--radius-pill); background: var(--btn); color: #fff; font-weight: 600; text-decoration: none; font-size: 13px; white-space: nowrap; transition: all 0.3s ease;">
+      Login
     </a>
 
-    <div class="navlinks">
-      <a href="#top" class="active">Home</a>
-      <a href="{{ url_for('support_page') }}">Support</a>
-      <a href="{{ url_for('about_us')}}">About Us</a>
-    </div>
+    <select id="langSwitcher" onchange="switchLanguage()"></select>
+</nav>
 
-    <!-- add this to your header
-<div id="google_translate_element"></div> 
-
-to your js part -->
-<!-- <script src="script.js"></script>
-      <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement(
-                {pageLanguage: 'en'},
-                'google_translate_element'
-            );
-        } -->
-         
-  <!-- </script>
-  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
-
-  
-
-    <label class="search" aria-label="Search">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
-        <path d="M20 20L17 17" stroke-width="2" stroke-linecap="round"></path>
-      </svg>
-      <input type="search" placeholder="Search" />
-    </label>
-  </nav>
-  
 
   <!-- HERO -->
   <header id="top" class="hero" role="banner">
     <div class="hero__in">
-      <h1 class="hero__headline">
+      <h1 class="hero__headline translatable">
         Let Your<br />
         Leaves<br />
         Do The<br />
@@ -543,8 +558,8 @@ to your js part -->
       </h1>
 
       <div class="hero__right" style="display: flex; flex-direction: column; align-items: flex-end; text-align: right;">
-        <div class="subhead">We Listen, Diagnose<br />And Heal</div>
-        <button class="btn" onclick="scrollToSection('detect')">Sign Up</button>
+        <div class="subhead translatable">We Listen, Diagnose<br />And Heal</div>
+        <a href="{{ request.url_for('signup')}}" class="btn translatable">Sign Up</a>
       </div>
 
     </div>
@@ -556,7 +571,7 @@ to your js part -->
             width:60px;height:60px;border-radius:50%;
             overflow:hidden;cursor:pointer;
             box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-  <img src="{{ url_for('static', filename='logo2.png') }}" 
+  <img src="{{ request.url_for('static', path='logo2.png') }}" 
        alt="Chatbot" 
        style="width:100%;height:100%;object-fit:cover;">
 </div>
@@ -585,15 +600,15 @@ to your js part -->
     <div class="section__in">
       <article id="detect" class="card" aria-labelledby="c1t">
         <div class="card__img">
-          <img src="{{ url_for('static', filename='crop1.png')}}" alt="Wheat stalks">
+          <img src="{{ request.url_for('static', path='crop1.png')}}" alt="Wheat stalks">
         </div>
         <div class="card__body">
-          <h2 id="c1t" class="card__title">Disease Detection And Treatment</h2>
-          <p class="card__copy">
+          <h2 id="c1t" class="card__title translatable">Disease Detection And Treatment</h2>
+          <p class="card__copy translatable">
             Upload or scan images of your plants to instantly detect diseases and receive tailored
             treatment suggestions — helping you keep your greens healthy and thriving.
           </p>
-          <button class="cta" onclick="window.location.href=`{{ url_for('detect_page') }}`">
+          <button class="cta translatable" onclick="window.location.href=`{{ request.url_for('detect_page') }}`">
             Detect Disease
             <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M5 12h14" stroke-width="2" stroke-linecap="round" />
@@ -606,12 +621,12 @@ to your js part -->
 
       <article class="card card--right" aria-labelledby="c2t">
         <div class="card__body">
-          <h2 id="c2t" class="card__title">Plant Health Workspace</h2>
-          <p class="card__copy">
-            Manage your plant’s health records in one place — track detected diseases, monitor
+          <h2 id="c2t" class="card__title translatable">Plant Health Workspace</h2>
+          <p class="card__copy translatable">
+            Manage your plant's health records in one place — track detected diseases, monitor
             treatments, and add notes for better care.
           </p>
-          <button class="cta" onclick="window.location.href=`{{ url_for('workspace') }}`">
+          <button class="cta translatable" onclick="window.location.href=`{{ request.url_for('workspace') }}`">
             Start Tracking
             <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M5 12h14" stroke-width="2" stroke-linecap="round" />
@@ -621,7 +636,7 @@ to your js part -->
 
         </div>
         <div class="card__img">
-          <img src="{{ url_for('static', filename='crop2.png')}}" alt="Golden crop close-up">
+          <img src="{{ request.url_for('static', path='crop2.png')}}" alt="Golden crop close-up">
         </div>
       </article>
     </div>
@@ -629,7 +644,7 @@ to your js part -->
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="footer__in">
+    <div class="footer__in translatable">
       © <span id="year"></span> Krishil. <br />All Rights Reserved.
     </div>
   </footer>
@@ -654,6 +669,7 @@ to your js part -->
   </script>
 
 
+
   <script>
     function scrollToSection(id) {
       const el = document.getElementById(id);
@@ -668,28 +684,51 @@ to your js part -->
       });
     });
   </script>
-
-      <script>
-    function removeGoogleBar() {
-        // remove iframe if injected
-        var frame = document.querySelector("iframe.goog-te-banner-frame");
-        if (frame) {
-            frame.remove();
-        }
-
-        // remove banner div if injected
-        var banner = document.querySelector(".goog-te-banner-frame.skiptranslate");
-        if (banner) {
-            banner.remove();
-        }
-
-        // reset body margin shift
-        document.body.style.top = "0px";
+   <script>
+    async function loadLanguages() {
+      const res = await fetch("/language");
+      const langs = await res.json();
+      const select = document.getElementById("langSwitcher");
+      select.innerHTML = "";
+      for (const code in langs) {
+        let opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = langs[code];
+        select.appendChild(opt);
+      }
     }
 
-    // run repeatedly to catch late injections
-    setInterval(removeGoogleBar, 500);
-    </script>
+    async function switchLanguage() {
+      const targetLang = document.getElementById("langSwitcher").value;
+      const elements = Array.from(document.querySelectorAll(".translatable"));
+      const texts = elements.map(el => el.innerText.trim());
+
+      const res = await fetch("/translate_page", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({texts: texts, target_lang: targetLang})
+      });
+
+      const data = await res.json();
+      data.translations.forEach((t, i) => {
+        elements[i].innerText = t;
+      });
+
+      document.cookie = `lang=${targetLang};path=/;max-age=2592000`; // 30 days
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      await loadLanguages();
+      const savedLang = document.cookie.split("; ").find(r => r.startsWith("lang="));
+      if (savedLang) {
+        const val = savedLang.split("=")[1];
+        document.getElementById("langSwitcher").value = val;
+        switchLanguage();
+      }
+    });
+  </script>
+
+
 
 </body>
 

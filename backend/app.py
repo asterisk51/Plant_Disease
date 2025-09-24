@@ -1,52 +1,157 @@
-from flask import Flask, request, jsonify, render_template, request, redirect, url_for, g
-import json
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import io
+import json as pyjson
+import numpy as np
+import sqlite3
+from datetime import datetime
+from dotenv import load_dotenv
+from PIL import Image
+
+from fastapi import FastAPI, Request, UploadFile, File, Form, Depends, HTTPException
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Text
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from sqlalchemy.exc import SQLAlchemyError
+
 import tensorflow as tf
 from tensorflow import keras
-import numpy as np
-from PIL import Image
-import io
-import os
-import json as pyjson
-from datetime import datetime
-from sqlalchemy.exc import SQLAlchemyError
-from dotenv import load_dotenv
 import google.generativeai as genai
-import sqlite3
+import gdown
+from backend.translations import translations
+# ------------------------------------------------------------------------------
+# App initialization
+# ------------------------------------------------------------------------------
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # adjust in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "..", "static")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "..", "templates")
+DB_PATH = os.path.join(BASE_DIR, "plant_disease.db")
 
-#------------------------------------------------------------------------------
-#Multilingual
-#------------------------------------------------------------------------------
+# Make sure base dir exists
+os.makedirs(BASE_DIR, exist_ok=True)
+
+# Static & templates
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
+
+# ------------------------------------------------------------------------------
+# Database setup
+# ------------------------------------------------------------------------------
+engine = create_engine(f"sqlite:///{DB_PATH.replace(os.sep, '/')}")
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+Base = declarative_base()
 
 
+class Upload(Base):
+    __tablename__ = "upload"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String(255), nullable=False)
+    predicted_class = Column(String(100), nullable=False)
+    confidence = Column(Float, nullable=False)
+    top_3_predictions = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
 
 
+class User(Base):
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
+    password = Column(String(200), nullable=False)
 
-#------------------------------------------------------------------------------
+
+class Contact(Base):
+    __tablename__ = "contact"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), nullable=False)
+    email = Column(String(100), nullable=False)
+    message = Column(String(300), nullable=False)
+
+
+Base.metadata.create_all(bind=engine)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# ------------------------------------------------------------------------------
+# Multilingual
+# ------------------------------------------------------------------------------
+languages = {
+    "en": "English",
+    "as": "Assamese",
+    "be": "Bengali",
+    "do": "Dogri",
+    "gu": "Gujarati",
+    "hi": "Hindi",
+    "ka": "Kannad",
+    "kas": "Kashmiri",
+    "kok": "konkani",
+    "mai": "maithili",
+    "mal": "Malayalam",
+    "man": "Manipuri",
+    "mar": "Marathi",
+    "ne": "Nepali",
+    "od": "Odia",
+    "pu": "Punjabi",
+    "sin": "Sindhi",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "ur": "Urdu",
+}
+
+from translations.translations import translations
+
+
+@app.get("/language")
+def get_languages():
+    return languages
+
+
+@app.post("/translate_page")
+async def translate_page(data: dict):
+    texts = data.get("texts", [])
+    target_lang = data.get("target_lang", "en")
+
+    results = []
+    for t in texts:
+        translated = translations.get(target_lang, {}).get(t, t)
+        results.append(translated)
+
+    return {"translations": results}
+
+
+# ------------------------------------------------------------------------------
 # Chat bot
-#------------------------------------------------------------------------------
-
+# ------------------------------------------------------------------------------
 load_dotenv()
-
-
-CORS(app)
-
 DEFAULT_GEMINI_MODEL = "gemini-1.5-flash"
 SYSTEM_PROMPT = """
 You are a helpful website assistant.
 Answer user questions clearly and concisely.
-
-Do not include navigation commands like NAVIGATE: — 
+Do not include navigation commands like NAVIGATE: —
 page navigation will be handled by the system.
 """
 
-
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-# ---------- Chatbot Logic ----------
 
 NAV_KEYWORDS = {
     "support": "/support",
@@ -75,100 +180,50 @@ def call_gemini(messages, model=None):
     return getattr(resp, "text", "")
 
 
-@app.route("/chat", methods=["POST"])
-def chat():
-    data = request.json
+@app.post("/chat")
+async def chat(data: dict):
+    provider = data.get("provider", "gemini")
     user_msg = data.get("message", "").lower().strip()
+    history = data.get("history", [])
 
-    # 1. Direct keyword match (support, about, etc.)
+    if not any(m["role"] == "system" for m in history):
+        history.insert(0, {"role": "system", "content": SYSTEM_PROMPT})
+
     for keyword, route in NAV_KEYWORDS.items():
         if keyword in user_msg or user_msg == f"/{keyword}":
-            return jsonify({
+            return {
                 "reply": f"The {keyword.capitalize()} page contains relevant information. Navigating...",
-                "navigate": route
-            })
+                "navigate": route,
+            }
 
-    # 2. If no keyword found → fallback to LLM
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_msg}
-    ]
-    reply = call_gemini(messages)
+    history.append({"role": "user", "content": user_msg})
 
-    return jsonify({"reply": reply, "navigate": None})
+    if provider == "openai":
+        reply = "OpenAI provider not configured yet."
+    else:
+        reply = call_gemini(history, data.get("model"))
 
+    return {"reply": reply, "navigate": None}
 
 
 # ------------------------------------------------------------------------------
-# App setup (single instance)
-# ------------------------------------------------------------------------------
-BASE_DIR = r"D:\Plant_Disease\backend"  # adjust if needed
-DB_PATH = os.path.join(BASE_DIR, "plant_disease.db")
-
-# Make sure base dir exists so SQLite can create the file
-os.makedirs(BASE_DIR, exist_ok=True)
-
-app = Flask(__name__, static_folder=r"D:\Plant_Disease\static", template_folder=r"D:\Plant_Disease\templates")
-CORS(app)
-
-# Configure SQLite database
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH.replace(os.sep, '/')}"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQLAlchemy(app)
-
-# ------------------------------------------------------------------------------
-# Database model
-# ------------------------------------------------------------------------------
-class Upload(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)
-    predicted_class = db.Column(db.String(100), nullable=False)
-    confidence = db.Column(db.Float, nullable=False)
-    top_3_predictions = db.Column(db.Text, nullable=False)  # Stored as JSON string
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-
-class Contact(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    message = db.Column(db.String(300), nullable=False)
-
-# ------------------------------------------------------------------------------
-# Globals for model + metadata
+# Model loading & helpers
 # ------------------------------------------------------------------------------
 model = None
 class_names = None
 model_metrics = None
 
-# Paths for model/metrics/class names
-MODEL_KERAS_PATH = r"D:\Plant_disease\backend\plant_disease_model.keras"
-MODEL_WEIGHTS_PATH = r"D:\Plant_disease\backend\plant_disease_model.weights.h5"
-# HISTORY_JSON_PATH = r"D:\ML\Plant_disease_2\backend\training_history.json"
-HISTORY_NPY_PATH = r"D:\Plant_disease\backend\training_history.npy"
-CLASS_NAMES_TXT_PATH = r"D:\Plant_disease\backend\class_names.txt"
+MODEL_KERAS_PATH = r"D:\Plant_Disease\backend\plant_disease_model.keras"
+MODEL_WEIGHTS_PATH = r"D:\Plant_Disease\backend\plant_disease_model.weights.h5"
+HISTORY_NPY_PATH = r"D:\Plant_Disease\backend\training_history.npy"
+CLASS_NAMES_TXT_PATH = r"D:\Plant_Disease\backend\class_names.txt"
 TRAIN_DIR_FALLBACK = r"D:\ML\Plant_disease(not to be presented)\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train"
 
-# ------------------------------------------------------------------------------
-# Helpers
-# ------------------------------------------------------------------------------
+
 def load_model_metrics():
-    """Load training/validation metrics from JSON or NPY."""
     global model_metrics
     try:
-        if os.path.exists(HISTORY_JSON_PATH):
-            with open(HISTORY_JSON_PATH, "r") as f:
-                model_metrics = pyjson.load(f)
-                print("Model metrics loaded successfully")
-                return model_metrics
-        elif os.path.exists(HISTORY_NPY_PATH):
+        if os.path.exists(HISTORY_NPY_PATH):
             history = np.load(HISTORY_NPY_PATH, allow_pickle=True).item()
             model_metrics = {
                 "val_accuracy": float(history["val_accuracy"][-1]),
@@ -176,336 +231,217 @@ def load_model_metrics():
                 "val_loss": float(history["val_loss"][-1]),
                 "loss": float(history["loss"][-1]),
             }
-            print("Model metrics loaded from numpy file")
             return model_metrics
-        else:
-            print("No metrics file found")
-            model_metrics = None
-            return None
-    except Exception as e:
-        print(f"Error loading model metrics: {e}")
-        model_metrics = None
         return None
+    except Exception:
+        return None
+
 
 def load_model():
-    """Load Keras model from .keras; if only weights exist, require create_model()."""
     global model
-    try:
-        if os.path.exists(MODEL_KERAS_PATH):
-            model = keras.models.load_model(MODEL_KERAS_PATH)
-            print("Model loaded from .keras file")
-        elif os.path.exists(MODEL_WEIGHTS_PATH):
-            # If you actually have a create_model() factory, import/use it here.
-            raise RuntimeError(
-                "Weights file found but no model definition present. "
-                "Define and call create_model() to load weights."
-            )
-        else:
-            raise FileNotFoundError("Model file not found")
-
-        load_model_metrics()
-    except Exception as e:
-        print(f"Error loading model: {e}")
+    if os.path.exists(MODEL_KERAS_PATH):
+        model = keras.models.load_model(MODEL_KERAS_PATH)
+    else:
         model = None
-        # Re-raise so startup fails loudly, or comment the next line to allow server start without model
-        # raise
+    load_model_metrics()
+
 
 def load_class_names():
-    """Load class names from text file or fallback to directory listing."""
     global class_names
-    try:
-        if os.path.exists(CLASS_NAMES_TXT_PATH):
-            with open(CLASS_NAMES_TXT_PATH, "r") as f:
-                class_names = [line.strip() for line in f if line.strip()]
-                print(f"Loaded {len(class_names)} class names from txt")
-                return class_names
+    if os.path.exists(CLASS_NAMES_TXT_PATH):
+        with open(CLASS_NAMES_TXT_PATH) as f:
+            class_names = [line.strip() for line in f if line.strip()]
+    elif os.path.exists(TRAIN_DIR_FALLBACK):
+        class_names = sorted(
+            [n for n in os.listdir(TRAIN_DIR_FALLBACK) if os.path.isdir(os.path.join(TRAIN_DIR_FALLBACK, n))]
+        )
+    else:
+        class_names = []
 
-        if os.path.exists(TRAIN_DIR_FALLBACK):
-            class_names = sorted(
-                [name for name in os.listdir(TRAIN_DIR_FALLBACK) if os.path.isdir(os.path.join(TRAIN_DIR_FALLBACK, name))]
-            )
-            print(f"Loaded {len(class_names)} class names from train dir")
-            return class_names
-
-        raise FileNotFoundError("Class names file or fallback directory not found")
-    except Exception as e:
-        print(f"Error loading class names: {e}")
-        class_names = None
-        return None
 
 def preprocess_image(image_bytes):
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize((256, 256))
     img_array = keras.preprocessing.image.img_to_array(img)
-    img_array = np.expand_dims(img_array, 0)
-    img_array = img_array / 255.0
+    img_array = np.expand_dims(img_array, 0) / 255.0
     return img_array
 
+
 # ------------------------------------------------------------------------------
-# API routes
+# Prediction routes
 # ------------------------------------------------------------------------------
-def get_last_uploads(limit=10):
-    conn = sqlite3.connect("plant_disease.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT image_path, disease, confidence, timestamp
-        FROM uploads
-        ORDER BY timestamp DESC
-        LIMIT ?
-    """, (limit,))
-    rows = cursor.fetchall()
-    conn.close()
-    return [
-        {
-            "image_url": f"/static/uploads/{row[0]}",
-            "disease": row[1],
-            "confidence": f"{row[2]:.2f}%",
-            "date": row[3].split(" ")[0],   # e.g. 2025-08-23
-            "time": row[3].split(" ")[1]    # e.g. 10:32
-        }
-        for row in rows
+@app.post("/api/predict")
+async def predict(image: UploadFile = File(...), db: Session = Depends(get_db)):
+    if not model:
+        raise HTTPException(status_code=500, detail="Model not loaded")
+
+    image_bytes = await image.read()
+    processed = preprocess_image(image_bytes)
+
+    preds = model.predict(processed)
+    predicted_class_index = int(np.argmax(preds[0]))
+    confidence = float(preds[0][predicted_class_index])
+
+    if not class_names:
+        raise HTTPException(status_code=500, detail="Class names not loaded")
+
+    predicted_class = class_names[predicted_class_index]
+    top_3_indices = np.argsort(preds[0])[-3:][::-1]
+    top_3_predictions = [
+        {"disease": class_names[int(i)], "confidence": float(preds[0][int(i)])}
+        for i in top_3_indices
     ]
 
-@app.route("/api/predict", methods=["POST"])
-def predict():
-    if "image" not in request.files:
-        return jsonify({"error": "No image provided", "success": False}), 400
+    upload_folder = os.path.join(r"D:\Plant_Disease\static", "uploads")
+    os.makedirs(upload_folder, exist_ok=True)
+    save_path = os.path.join(upload_folder, image.filename)
+    with open(save_path, "wb") as f:
+        f.write(image_bytes)
 
-    if model is None:
-        return jsonify({"error": "Model not loaded on server", "success": False}), 500
+    record = Upload(
+        filename=image.filename,
+        predicted_class=predicted_class,
+        confidence=confidence,
+        top_3_predictions=pyjson.dumps(top_3_predictions),
+    )
+    db.add(record)
+    db.commit()
 
-    try:
-        image_file = request.files["image"]
-        image_bytes = image_file.read()
-        processed_image = preprocess_image(image_bytes)
-
-        predictions = model.predict(processed_image)
-        predicted_class_index = int(np.argmax(predictions[0]))
-        confidence = float(predictions[0][predicted_class_index])
-
-        if not class_names or predicted_class_index >= len(class_names):
-            return jsonify(
-                {
-                    "error": "Class names not available or index out of range",
-                    "raw_prediction": predicted_class_index,
-                    "confidence": confidence,
-                    "success": False,
-                }
-            ), 500
-
-        predicted_class = class_names[predicted_class_index]
-
-        top_3_indices = np.argsort(predictions[0])[-3:][::-1]
-        top_3_predictions = [
-            {"disease": class_names[int(idx)], "confidence": float(predictions[0][int(idx)])}
-            for idx in top_3_indices
-        ]
-
-        # -------------------------------
-        # Save uploaded image to static/uploads
-        # -------------------------------
-        UPLOAD_FOLDER = os.path.join(app.static_folder, "uploads")
-        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-        save_path = os.path.join(UPLOAD_FOLDER, image_file.filename)
-
-        # Reset file pointer and save
-        image_file.stream.seek(0)
-        image_file.save(save_path)
-
-        # -------------------------------
-        # Store prediction in the database
-        # -------------------------------
-        upload_record = Upload(
-            filename=image_file.filename,
-            predicted_class=predicted_class,
-            confidence=confidence,
-            top_3_predictions=pyjson.dumps(top_3_predictions),
-        )
-        db.session.add(upload_record)
-        db.session.commit()
-
-        # -------------------------------
-        # Response
-        # -------------------------------
-        model_performance = {
-            "validation_accuracy": (model_metrics or {}).get("val_accuracy"),
-            "training_accuracy": (model_metrics or {}).get("accuracy"),
-            "validation_loss": (model_metrics or {}).get("val_loss"),
-            "training_loss": (model_metrics or {}).get("loss"),
-        }
-
-        return jsonify(
-            {
-                "prediction": predicted_class,
-                "confidence": confidence,
-                "model_metrics": model_performance,
-                "success": True,
-            }
-        )
-
-    except Exception as e:
-        return jsonify({"error": str(e), "success": False}), 500
+    return {
+        "prediction": predicted_class,
+        "confidence": confidence,
+        "model_metrics": model_metrics,
+        "success": True,
+    }
 
 
-
-@app.route("/workspace")
-def workspace_page():
-    try:
-        # Fetch latest 20 predictions
-        uploads = Upload.query.order_by(Upload.timestamp.desc()).limit(20).all()
-
-        # Group by date
-        crops_by_date = {}
-        for u in uploads:
-            date_str = u.timestamp.strftime("%d %B %Y")  # e.g. "23 August 2025"
-            if date_str not in crops_by_date:
-                crops_by_date[date_str] = []
-            crops_by_date[date_str].append({
-                "name": u.predicted_class,
-                "type": "Detected Plant",
-                "status": f"Confidence: {u.confidence*100:.1f}%",
-                "progress": "Analyzed",
-                "image": f"uploads/{u.filename}"  # will be resolved as /static/uploads/...
-            })
-
-        return render_template("workspace.html", crops=crops_by_date)
-
-    except Exception as e:
-        print("Error loading workspace:", e)
-        return render_template("workspace.html", crops={})
-
-@app.route("/api/model-info", methods=["GET"])
+@app.get("/api/model-info")
 def get_model_info():
-    try:
-        plants = list(set([name.split("___")[0] for name in (class_names or [])]))
-        return jsonify(
-            {
-                "supported_plants": plants,
-                "total_diseases": len(class_names) if class_names else 0,
-                "image_requirements": {"width": 256, "height": 256, "format": ["jpg", "jpeg", "png"]},
-                "model_metrics": model_metrics,
-            }
-        )
-    except Exception as e:
-        return jsonify({"error": str(e), "success": False}), 500
-    
+    plants = list(set([n.split("___")[0] for n in (class_names or [])]))
+    return {
+        "supported_plants": plants,
+        "total_diseases": len(class_names or []),
+        "image_requirements": {"width": 256, "height": 256, "format": ["jpg", "jpeg", "png"]},
+        "model_metrics": model_metrics,
+    }
 
-@app.route("/chat", methods=["POST"])
-def chat():
-    data = request.json
-    provider = data.get("provider")
-    user_msg = data.get("message", "")
-    history = data.get("history", [])
-
-    if not any(m["role"] == "system" for m in history):
-        history.insert(0, {"role": "system", "content": SYSTEM_PROMPT})
-
-    history.append({"role": "user", "content": user_msg})
-
-    try:
-        if provider == "openai":
-            reply = call_openai(history, data.get("model"))
-        else:
-            reply = call_gemini(history, data.get("model"))
-        return jsonify({"reply": reply})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
 
 # ------------------------------------------------------------------------------
-# Page routes
+# Contact & signup
 # ------------------------------------------------------------------------------
-
-@app.route("/send_message", methods=["POST"])
-def send_message():
-    data = request.json
+@app.post("/send_message")
+async def send_message(data: dict, db: Session = Depends(get_db)):
     if not all(k in data for k in ("username", "email", "message")):
-        return jsonify({"error": "Missing fields"}), 400
+        raise HTTPException(status_code=400, detail="Missing fields")
 
     new_msg = Contact(username=data["username"], email=data["email"], message=data["message"])
-    db.session.add(new_msg)
-    db.session.commit()
-    return jsonify({"success": True})
+    db.add(new_msg)
+    db.commit()
+    return {"success": True}
 
 
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-    if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        password = request.form["password"]
-        # Save user details to DB here
-        return redirect(url_for("home"))
-    return render_template("signup.html")
+@app.post("/signup")
+async def signup(name: str = Form(...), email: str = Form(...), password: str = Form(...)):
+    return RedirectResponse("/", status_code=303)
 
-@app.route("/")
-def home():
-    return render_template("index.html")
 
-@app.route("/detect")
-def detect_page():
-    return render_template("detect.html")
+# ------------------------------------------------------------------------------
+# Page routes (Jinja2)
+# ------------------------------------------------------------------------------
+@app.get("/")
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.route("/admin")
-def admin_page():
-    return render_template("admin.html")
 
-@app.route("/workspace")
-def workspace():
-    try:
-        # Fetch latest 20 predictions from DB
-        uploads = Upload.query.order_by(Upload.timestamp.desc()).limit(20).all()
+@app.get("/detect")
+def detect_page(request: Request):
+    return templates.TemplateResponse("detect.html", {"request": request})
 
-        # Group by date
-        crops_by_date = {}
-        for u in uploads:
-            date_str = u.timestamp.strftime("%d %B %Y")  # e.g. "23 August 2025"
-            if date_str not in crops_by_date:
-                crops_by_date[date_str] = []
-            crops_by_date[date_str].append({
+
+@app.get("/admin")
+def admin_page(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
+
+@app.get("/workspace")
+def workspace(request: Request, db: Session = Depends(get_db)):
+    uploads = db.query(Upload).order_by(Upload.timestamp.desc()).limit(20).all()
+    crops_by_date = {}
+    for u in uploads:
+        date_str = u.timestamp.strftime("%d %B %Y")
+        crops_by_date.setdefault(date_str, []).append(
+            {
                 "name": u.predicted_class,
                 "type": "Detected Plant",
                 "status": f"Confidence: {u.confidence*100:.1f}%",
                 "progress": "Analyzed",
-                "image": f"uploads/{u.filename}"
-            })
+                "image": f"uploads/{u.filename}",
+            }
+        )
+    return templates.TemplateResponse("workspace.html", {"request": request, "crops": crops_by_date})
 
-        return render_template("workspace.html", crops=crops_by_date)
 
-    except Exception as e:
-        print("Error loading workspace:", e)
-        return render_template("workspace.html", crops={})
+@app.get("/user")
+def user_page(request: Request):
+    return templates.TemplateResponse("user.html", {"request": request})
 
-@app.route("/user")
-def user_page():
-    return render_template("user.html")
 
-@app.route("/contact")
-def contact_page():
-    return render_template("contact.html")
+@app.get("/contact")
+def contact_page(request: Request):
+    return templates.TemplateResponse("contact.html", {"request": request})
 
-@app.route("/support")
-def support_page():
-    return render_template("support.html")
 
-@app.route("/about")
-def about_us():
-    return render_template("about.html")
+@app.get("/support")
+def support_page(request: Request):
+    return templates.TemplateResponse("support.html", {"request": request})
 
-@app.route("/chatbot")
-def chatbot():
-    return render_template("chatbot.html", system=SYSTEM_PROMPT)
+
+@app.get("/about")
+def about_us(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+
+
+@app.get("/chatbot")
+def chatbot(request: Request):
+    return templates.TemplateResponse("chatbot.html", {"request": request, "system": SYSTEM_PROMPT})
+
+
+@app.get("/login")
+def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+pages = {
+    "home": "Welcome to Krishil homepage",
+    "about": "About Us page content",
+    "support": "Support page content",
+    "detect": "Disease Detection and Treatment page",
+    "workspace": "Plant Health Workspace page",
+}
+page_to_endpoint = {
+    "detect": "detect_page",
+    "workspace": "workspace",
+    "about_us": "about_us",
+    "support_page": "support_page",
+}
+
+
+@app.get("/search")
+def search(request: Request, q: str = ""):
+    query = q.lower()
+    results = []
+    for page, content in pages.items():
+        if query in page.lower() or query in content.lower():
+            results.append((page, content))
+    return templates.TemplateResponse(
+        "search_results.html", {"request": request, "query": query, "results": results, "page_to_endpoint": page_to_endpoint}
+    )
 
 
 # ------------------------------------------------------------------------------
-# Main entry
+# Startup events
 # ------------------------------------------------------------------------------
-if __name__ == "__main__":
-    # Load resources before starting server
+@app.on_event("startup")
+def startup_event():
     load_class_names()
     load_model()
-
-    # Create DB tables
-    with app.app_context():
-        db.create_all()
-
-    app.run(debug=True, port=5000)

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up — Krishil</title>
+  <title>Log In — Krishil</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,6 @@
       --beige:#e9d7c5;
       --card:#f7eed7;
       --text:#222;
-      --muted:#5a6b57;
       --line:#e5dbc6;
       --btn:#58a357;
       --btn-hover:#4f9550;
@@ -52,7 +51,6 @@
       font-family:"Playfair Display",serif;
       font-weight:700;
       font-size:28px;
-      letter-spacing:.2px;
     }
     .spacer{flex:1}
 
@@ -74,8 +72,6 @@
       transition:opacity .2s ease;
     }
     .links a:hover{opacity:1}
-
-    /* underline transition added */
     .links a::after {
       content:"";
       position:absolute;
@@ -91,7 +87,7 @@
     }
     .links a:hover::after,
     .links a.active::after {
-      width:22px; /* set to 100% if you want full underline */
+      width:22px;
     }
 
     .search {
@@ -105,7 +101,6 @@
       min-width: 220px;
       color: #fff;
     }
-
     .search input {
       background: transparent;
       border: 0;
@@ -114,16 +109,8 @@
       width: 100%;
       font-size: 14px;
     }
-
-    .search input::placeholder {
-      color: rgba(255, 255, 255, .9);
-    }
-
-    .search .icon {
-      width: 14px;
-      height: 14px;
-      opacity: .9;
-    }
+    .search input::placeholder { color: rgba(255, 255, 255, .9); }
+    .search .icon { width: 14px; height: 14px; opacity:.9; }
 
     .hero-title{
       max-width:1100px;
@@ -132,15 +119,11 @@
       font-family:"Playfair Display",serif;
       font-size:64px;
       font-weight:700;
-      letter-spacing:.3px;
       text-align:center;
     }
 
     /* ================ FORM CARD ================== */
-    .wrap{
-      position:relative;
-      max-width:1100px;margin:0 auto;
-    }
+    .wrap{ position:relative; max-width:1100px;margin:0 auto; }
     .card{
       position:relative;
       width:740px;max-width:92%;
@@ -151,16 +134,13 @@
       box-shadow:0 10px 20px rgba(0,0,0,.06);
     }
 
-    .field{
-      margin:14px 0 18px;
-    }
+    .field{ margin:14px 0 18px; }
     .label{
       font-size:15px;color:#2b312c;margin:0 0 8px 0;
       display:flex;align-items:center;gap:10px;
     }
-    .label .ico{
-      width:16px;height:16px;color:#2c5f34;opacity:.95;flex:0 0 16px;
-    }
+    .label .ico{ width:16px;height:16px;color:#2c5f34;opacity:.95; }
+
     .input{
       width:100%;height:56px;border-radius:8px;
       border:1.5px solid var(--line);
@@ -181,9 +161,7 @@
     .btn:hover{background:var(--btn-hover)}
     .btn:active{transform:translateY(1px)}
 
-    .muted-link{
-      text-align:center;font-size:14px;color:#333;
-    }
+    .muted-link{ text-align:center;font-size:14px;color:#333; }
     .muted-link a{color:#1f4f2a;text-decoration:none}
     .muted-link a:hover{text-decoration:underline}
 
@@ -208,9 +186,9 @@
       <div class="brand">Krishil</div>
 
       <div class="links">
-        <a class="active" href="{{ request.url_for('home')}}">Home</a>
-        <a href="{{ request.url_for('support_page')}}">Support</a>
-        <a href="{{ request.url_for('about_us')}}">About Us</a>
+        <a class="active" href="#">Home</a>
+        <a href="#">Support</a>
+        <a href="#">About Us</a>
       </div>
 
       <div class="spacer"></div>
@@ -224,27 +202,17 @@
       </label>
     </div>
 
-    <h1 class="hero-title">Sign Up</h1>
+    <h1 class="hero-title">Log In</h1>
   </header>
 
   <!-- MAIN / FORM -->
   <main class="wrap">
-    <section class="card" aria-label="Sign Up form">
+    <section class="card" aria-label="Login form">
 
-      <!-- Username with User Icon -->
+      <!-- Email -->
       <div class="field">
         <div class="label">
-          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5Z"/>
-          </svg>
-          Username
-        </div>
-        <input class="input" type="text" autocomplete="username">
-      </div>
-
-      <div class="field">
-        <div class="label">
-          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor">
             <path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v.5L12 12 2 6.5V6Zm0 3.3V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9.3l-10 5-10-5Z"/>
           </svg>
           Email
@@ -252,19 +220,20 @@
         <input class="input" type="email" autocomplete="email">
       </div>
 
+      <!-- Password -->
       <div class="field">
         <div class="label">
-          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17 8h-1V6a4 4 0 1 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-7-2a2 2 0 1 1 4 0v2h-4V6Z"/>
           </svg>
           Password
         </div>
-        <input class="input" type="password" autocomplete="new-password">
+        <input class="input" type="password" autocomplete="current-password">
       </div>
 
-      <button class="btn" type="button">Sign Up</button>
+      <button class="btn" type="button">Log In</button>
 
-      <p class="muted-link">Already Have An Account? <a href="#">Log In</a></p>
+      <p class="muted-link">Don’t Have An Account? <a href="#">Sign Up</a></p>
     </section>
   </main>
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Krishil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-b from-[#355e3b] via-[#cbbd94] to-[#f5e9d3]">
+
+  <!-- Navbar -->
+  <header class="flex justify-between items-center px-8 py-4 fixed w-full top-0 z-50 bg-gradient-to-b from-[#355e3b]/90 to-transparent">
+    <h1 class="text-2xl font-bold text-white">Krishil</h1>
+    <nav class="flex gap-6 text-white font-medium">
+      <a href="#" class="hover:text-gray-200">Home</a>
+      <a href="#" class="hover:text-gray-200">Support</a>
+      <a href="#" class="hover:text-gray-200">About Us</a>
+    </nav>
+    <input
+      type="text"
+      placeholder="Search..."
+      class="border border-white/50 bg-white/10 text-white placeholder-white/70 rounded-full px-4 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-white"
+    />
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex flex-col md:flex-row items-center justify-between px-12 py-28 flex-grow relative bg-gradient-to-b from-[#355e3b]/10 to-transparent">
+    
+    <!-- Image on the left, circular and touching the side -->
+    <div class="flex-shrink-0">
+      <img
+        src="{{ url_for('static', filename='background 3.png') }}"
+        alt="Plant Pot"
+        class="w-[420px] h-[420px] object-cover rounded-full shadow-2xl"
+      />
+    </div>
+
+    <!-- Text on the right -->
+    <div class="max-w-xl text-center md:text-left md:ml-12">
+      <h2 class="text-5xl font-bold text-green-900 leading-tight">
+        Let Your Leaves <br /> Do The Talking
+      </h2>
+      <p class="mt-4 text-lg text-green-800">
+        Krishil is an AI-powered plant care platform to detect diseases,
+        track treatments, and ensure healthier growth.
+      </p>
+      <button class="mt-6 bg-green-700 hover:bg-green-800 text-white rounded-full px-6 py-2">
+        Sign Up
+      </button>
+    </div>
+  </main>
+
+  <!-- Features Section -->
+  <section class="relative px-12 py-16">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#f3e9d3] via-[#f9f6ef] to-[#fafafa] -z-10"></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+
+      <!-- Card 1 -->
+      <div class="shadow-xl rounded-2xl border border-green-200 bg-white/90 backdrop-blur-sm p-6 flex flex-col items-center text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />
+        </svg>
+        <h3 class="text-xl font-semibold text-green-900">Detection And Treatment</h3>
+        <p class="mt-2 text-green-700 text-sm">
+          Upload or scan images of your plants to identify diseases, detect pests,
+          and receive tailored treatment suggestions – helping you keep them healthy
+          and thriving.
+        </p>
+        <button class="mt-4 bg-green-700 hover:bg-green-800 text-white rounded-full px-6 py-2">
+          Detect Disease
+        </button>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="shadow-xl rounded-2xl border border-green-200 bg-white/90 backdrop-blur-sm p-6 flex flex-col items-center text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <h3 class="text-xl font-semibold text-green-900">Plant Health Workspace</h3>
+        <p class="mt-2 text-green-700 text-sm">
+          Manage your plant’s health records in one place – track detected diseases,
+          monitor treatments, and add notes for better care.
+        </p>
+        <button class="mt-4 bg-green-700 hover:bg-green-800 text-white rounded-full px-6 py-2">
+          Start Tracking
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 bg-green-900 text-white text-sm">
+    © 2025 Krishil. All Rights Reserved.
+  </footer>
+</body>
+</html>

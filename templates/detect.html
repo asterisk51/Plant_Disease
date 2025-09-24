@@ -203,7 +203,7 @@
     <h1>Krishil</h1>
 
     <nav>
-      <a href="{{ url_for('home')}}" class="active">Home</a>
+      <a href="{{ request.url_for('home')}}" class="active">Home</a>
       <a href="#">Support</a>
       <a href="#">About Us</a>
     </nav>
@@ -246,6 +246,36 @@
       © <span id="year"></span> 2025 Krishil. <br />All Rights Reserved.
     </div>
   </footer>
+
+  
+  <!-- Floating Chat Icon -->
+<div id="chatIcon" 
+     style="position:fixed;bottom:20px;right:20px;
+            width:60px;height:60px;border-radius:50%;
+            overflow:hidden;cursor:pointer;
+            box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+  <img src="{{ request.url_for('static', path='logo2.png') }}" 
+       alt="Chatbot" 
+       style="width:100%;height:100%;object-fit:cover;">
+</div>
+
+<!-- Chatbot Modal -->
+<div id="chatModal" 
+     style="display:none;position:fixed;bottom:90px;right:20px;
+            width:400px;height:500px;border:1px solid #ccc;
+            border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.4);
+            background:#fff;overflow:hidden;z-index:9999;">
+  <iframe src="/chatbot" 
+          style="width:100%;height:100%;border:none;"></iframe>
+</div>
+
+<script>
+  const icon = document.getElementById("chatIcon");
+  const modal = document.getElementById("chatModal");
+  icon.onclick = () => {
+    modal.style.display = modal.style.display === "none" ? "block" : "none";
+  };
+</script>
 
   <script>
   const uploadBtn = document.getElementById("uploadBtn");
@@ -312,5 +342,7 @@
     }
   });
 </script>
+<script src="/static/scripts.js"></script>
+
 </body>
 </html>

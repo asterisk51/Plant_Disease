@@ -30,7 +30,8 @@ async function sendMessage() {
   // 🔗 Auto redirect if navigation is detected
   if (data.navigate) {
     setTimeout(() => {
-      window.location.href = data.navigate;
+      // window.location.href = data.navigate;
+      window.open(data.navigate, "_blank")
     }, 1500); // 1.5 sec so user sees the bot response
   }
 }

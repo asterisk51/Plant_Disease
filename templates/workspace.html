@@ -283,9 +283,9 @@
     <div class="nav">
       <h1>Krishil</h1>
       <ul>
-        <li><a href="{{ url_for('home')}}" class="active">Home</a></li>
-        <li><a href="{{ url_for('support_page')}}">Support</a></li>
-        <li><a href="{{ url_for('about_us')}}">About Us</a></li>
+        <li><a href="{{ request.url_for('home')}}" class="active">Home</a></li>
+        <li><a href="{{ request.url_for('support_page')}}">Support</a></li>
+        <li><a href="{{ request.url_for('about_us')}}">About Us</a></li>
       </ul>
       <div class="search" aria-label="Search">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -310,7 +310,7 @@
         {% for plant in plants %}
           <div class="card">
             <div class="image">
-              <img src="{{ url_for('static', filename=plant.image) }}" alt="{{ plant.name }}">
+              <img src="{{ request.url_for('static', path=plant.image) }}" alt="{{ plant.name }}">
             </div>
             <div class="title">{{ plant.name }}</div>
             <div class="sub-title">🌱 {{ plant.type }}</div>
@@ -329,6 +329,36 @@
   {% endif %}
 </main>
 
+
+
+  <!-- Floating Chat Icon -->
+<div id="chatIcon" 
+     style="position:fixed;bottom:20px;right:20px;
+            width:60px;height:60px;border-radius:50%;
+            overflow:hidden;cursor:pointer;
+            box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+  <img src="{{ request.url_for('static', path='logo2.png') }}" 
+       alt="Chatbot" 
+       style="width:100%;height:100%;object-fit:cover;">
+</div>
+
+<!-- Chatbot Modal -->
+<div id="chatModal" 
+     style="display:none;position:fixed;bottom:90px;right:20px;
+            width:400px;height:500px;border:1px solid #ccc;
+            border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.4);
+            background:#fff;overflow:hidden;z-index:9999;">
+  <iframe src="/chatbot" 
+          style="width:100%;height:100%;border:none;"></iframe>
+</div>
+
+<script>
+  const icon = document.getElementById("chatIcon");
+  const modal = document.getElementById("chatModal");
+  icon.onclick = () => {
+    modal.style.display = modal.style.display === "none" ? "block" : "none";
+  };
+</script>
 
   <footer>
     &copy; 2025 Krishil.<br />All Rights Reserved.

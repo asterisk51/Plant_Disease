@@ -280,9 +280,9 @@ nav a {
     <div class="topbar">
       <h1>Krishil</h1>
       <nav>
-        <a href="{{ url_for('home')}}">Home</a>
-        <a href="{{ url_for('support_page')}}" class="active">Support</a>
-        <a href="{{ url_for('about_us')}}">About</a>
+        <a href="{{ request.url_for('home')}}">Home</a>
+        <a href="{{ request.url_for('support_page')}}" class="active">Support</a>
+        <a href="{{ request.url_for('about_us')}}">About</a>
       </nav>
       <!-- <label class="search" aria-label="Search">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
