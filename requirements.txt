@@ -6,10 +6,10 @@ tensorflow-cpu
 # IndicTrans Toolkit
 IndicTransToolkit
 
-# Flask + Backend
-flask
-flask_sqlalchemy
-flask_cors
+# FastAPI + Backend
+fastapi
+uvicorn[standard]
+sqlalchemy
 
 # Utilities
 pillow
