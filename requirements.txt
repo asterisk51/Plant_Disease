@@ -1,22 +1,22 @@
 # Core ML + NLP
-torch==2.2.2
-transformers==4.41.2
-tensorflow-cpu==2.16.1
+torch
+transformers
+tensorflow-cpu
 
 # IndicTrans Toolkit
 IndicTransToolkit
 
 # Flask + Backend
-flask==3.0.3
-flask_sqlalchemy==3.1.1
-flask_cors==4.0.1
+flask
+flask_sqlalchemy
+flask_cors
 
 # Utilities
-pillow==10.4.0
-numpy==1.26.4
-requests==2.32.3
-gdown==5.2.0
-python-dotenv==1.0.1
+pillow
+numpy
+requests
+gdown
+python-dotenv
 
 # Google AI SDK
-google-generativeai==0.7.2
+google-generativeai
