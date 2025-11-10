@@ -17,6 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.exc import SQLAlchemyError
+import asyncio, os, httpx
 
 import tensorflow as tf
 from tensorflow import keras
@@ -118,8 +119,20 @@ languages = {
     "ur": "Urdu",
 }
 
-from translations.translations import translations
+@app.on_event("startup")
+async def keep_alive():
+    async def ping_forever():
+        while True:
+            try:
+                url = os.environ.get("https://krishil.onrender.com")
+                if url:
+                    async with httpx.AsyncClient() as client:
+                        await client.get(url)
+            except Exception:
+                pass
+            await asyncio.sleep(600)  # every 10 minutes
 
+    asyncio.create_task(ping_forever())
 
 @app.get("/language")
 def get_languages():
