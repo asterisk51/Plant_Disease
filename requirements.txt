@@ -20,5 +20,5 @@ python-dotenv
 
 # Google AI SDK
 google-generativeai
-
+httpx
 python-multipart
