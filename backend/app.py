@@ -18,6 +18,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, 
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.exc import SQLAlchemyError
 import asyncio, os, httpx
+from contextlib import asynccontextmanager
 
 import tensorflow as tf
 from tensorflow import keras
@@ -119,8 +120,8 @@ languages = {
     "ur": "Urdu",
 }
 
-@app.on_event("startup")
-async def keep_alive():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     async def ping_forever():
         while True:
             try:
@@ -130,9 +131,19 @@ async def keep_alive():
                         await client.get(url)
             except Exception:
                 pass
-            await asyncio.sleep(600)  # every 10 minutes
+            await asyncio.sleep(600)  # ping every 10 minutes
 
-    asyncio.create_task(ping_forever())
+    # Start background ping task
+    task = asyncio.create_task(ping_forever())
+    yield
+    # On shutdown, cancel background task
+    task.cancel()
+
+app = FastAPI(lifespan=lifespan)
+
+@app.get("/")
+async def home():
+    return {"message": "FastAPI is awake!"}
 
 @app.get("/language")
 def get_languages():
