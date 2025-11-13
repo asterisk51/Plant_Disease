@@ -16,11 +16,13 @@ This is the front page with brief introduction for the website.
 
 ![Second_page](images/secondpage.png)
 
-We can use functionalities like detect the disease, work in our own workspace and upload our own customized dataset. 
+We can use functionalities like detect the disease and review in our own workspace 
 
 ![Disease_detection](images/Detection.png)
 
 Here we can upload images of the leaves and detect the disease 
+
+Website link: [Krishil](https://krishil.onrender.com)
 
 ## Future enhancements 
 
