@@ -28,6 +28,28 @@ from backend.translations import translations
 # ------------------------------------------------------------------------------
 # App initialization
 # ------------------------------------------------------------------------------
+#keep alive
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # load ML model & class names ONCE when server starts
+    load_class_names()
+    load_model()
+
+    async def ping_forever():
+        while True:
+            try:
+                url = os.environ.get("https://krishil.onrender.com")
+                if url:
+                    async with httpx.AsyncClient(timeout=10) as client:
+                        await client.get(url)
+            except Exception:
+                pass
+            await asyncio.sleep(600)
+
+    task = asyncio.create_task(ping_forever())
+    yield
+    task.cancel()
+    
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
@@ -120,27 +142,7 @@ languages = {
     "ur": "Urdu",
 }
 
-#keep alive
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # load ML model & class names ONCE when server starts
-    load_class_names()
-    load_model()
 
-    async def ping_forever():
-        while True:
-            try:
-                url = os.environ.get("https://krishil.onrender.com")
-                if url:
-                    async with httpx.AsyncClient(timeout=10) as client:
-                        await client.get(url)
-            except Exception:
-                pass
-            await asyncio.sleep(600)
-
-    task = asyncio.create_task(ping_forever())
-    yield
-    task.cancel()
 
 
 
