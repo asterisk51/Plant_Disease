@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     async def ping_forever():
         while True:
             try:
-                url = os.environ.get("https://krishil.onrender.com")
+                url = os.environ.get("RENDER_EXTERNAL_URL")
                 if url:
                     async with httpx.AsyncClient(timeout=10) as client:
                         await client.get(url)
@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
     task = asyncio.create_task(ping_forever())
     yield
     task.cancel()
-    
+
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
