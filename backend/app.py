@@ -17,8 +17,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.exc import SQLAlchemyError
-import asyncio, os, httpx
 from contextlib import asynccontextmanager
+import asyncio, os, httpx
 
 import tensorflow as tf
 from tensorflow import keras
@@ -28,7 +28,7 @@ from backend.translations import translations
 # ------------------------------------------------------------------------------
 # App initialization
 # ------------------------------------------------------------------------------
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # adjust in production
@@ -120,30 +120,29 @@ languages = {
     "ur": "Urdu",
 }
 
+#keep alive
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # load ML model & class names ONCE when server starts
+    load_class_names()
+    load_model()
+
     async def ping_forever():
         while True:
             try:
                 url = os.environ.get("https://krishil.onrender.com")
                 if url:
-                    async with httpx.AsyncClient() as client:
+                    async with httpx.AsyncClient(timeout=10) as client:
                         await client.get(url)
             except Exception:
                 pass
-            await asyncio.sleep(600)  # ping every 10 minutes
+            await asyncio.sleep(600)
 
-    # Start background ping task
     task = asyncio.create_task(ping_forever())
     yield
-    # On shutdown, cancel background task
     task.cancel()
 
-app = FastAPI(lifespan=lifespan)
 
-@app.get("/")
-async def home():
-    return {"message": "FastAPI is awake!"}
 
 @app.get("/language")
 def get_languages():
@@ -462,10 +461,4 @@ def search(request: Request, q: str = ""):
     )
 
 
-# ------------------------------------------------------------------------------
-# Startup events
-# ------------------------------------------------------------------------------
-@app.on_event("startup")
-def startup_event():
-    load_class_names()
-    load_model()
+
